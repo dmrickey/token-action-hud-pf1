@@ -20,15 +20,12 @@ Token Action HUD is a repositionable HUD of actions for a selected token.
 ## Method 2
 1. On Foundry VTT's **Configuration and Setup** screen, go to **Add-on Modules**
 2. Click **Install Module**
-3. In the Manifest URL field, paste: `https://github.com/dmrickey/token-action-hud-pf1/releases/latest/download/token-action-hud-pf1.json`
+3. In the Manifest URL field, paste: `https://github.com/dmrickey/token-action-hud-pf1/releases/latest/download/module.json`
 4. Click **Install** next to the pasted Manifest URL
 
 ## Required Modules
 
 **IMPORTANT** - Token Action HUD Pathfinder requires the [Token Action HUD Core](https://foundryvtt.com/packages/token-action-hud-core) module to be installed.
-
-## Recommended Modules
-Token Action HUD uses either the [Color Picker](https://foundryvtt.com/packages/color-picker), [libThemer](https://foundryvtt.com/packages/lib-themer) or [VTTColorSettings](https://foundryvtt.com/packages/colorsettings) library modules for its color picker settings. Only one is required.
 
 # Support
 
