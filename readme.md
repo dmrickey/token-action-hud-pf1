@@ -1,4 +1,4 @@
-# Token Action HUD Pathfinder 2
+# Token Action HUD Pathfinder
 
 Token Action HUD is a repositionable HUD of actions for a selected token.
 
