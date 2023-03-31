@@ -1,0 +1,16 @@
+#token-action-hud {
+    .charged {
+        align-items: center;
+        display: flex;
+        font-size: .65rem;
+
+        &:before {
+            content: '';
+            width: .7rem;
+            height: .7rem;
+            background: url(/systems/pf1/icons/actions/battery-pack.svg);
+            display: block;
+            margin: .2rem;
+        }
+    }
+}

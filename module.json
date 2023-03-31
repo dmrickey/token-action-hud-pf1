@@ -1,0 +1,79 @@
+{
+    "id": "token-action-hud-pf1",
+    "title": "Token Action HUD Pathfinder 1e",
+    "description": "Token Action HUD is a repositionable HUD of actions for a selected token",
+    "authors": [
+        {
+            "name": "Larkinabout",
+            "url": "https://github.com/Larkinabout"
+        },
+        {
+            "name": "Drental"
+        },
+        {
+            "name": "David Rickey",
+            "url": "https://github.com/dmrickey",
+            "discord": "david aka claudekennilol#2244"
+        }
+    ],
+    "url": "https://github.com/dmrickey/token-action-hud-pf1",
+    "flags": {},
+    "version": "1.0.0",
+    "compatibility": {
+        "minimum": "10",
+        "verified": "10.291"
+    },
+    "esmodules": [
+        "./token-action-hud-pf1.min.js"
+    ],
+    "scripts": [],
+    "styles": [
+        "./token-action-hud-pf1.css"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/en.json"
+        }
+    ],
+    "packs": [],
+    "relationships": {
+        "systems": [
+            {
+                "id": "pf1",
+                "type": "system",
+                "manifest": "https://gitlab.com/foundryvtt_pathfinder1e/foundryvtt-pathfinder1/-/releases/permalink/latest/downloads/system.json",
+                "compatibility": {
+                    "minimum": "0.82",
+                    "verified": "0.82.5"
+                }
+            }
+        ],
+        "requires": [
+            {
+                "id": "token-action-hud-core",
+                "type": "module",
+                "compatibility": [
+                    {
+                        "minimum": "1.2.0",
+                        "maximum": "1.2",
+                        "verified": "1.2.0"
+                    }
+                ]
+            }
+        ],
+        "optional": [],
+        "flags": {
+            "optional": []
+        }
+    },
+    "socket": false,
+    "manifest": "https://github.com/dmrickey/token-action-hud-pf1/releases/latest/download/module.json",
+    "download": "https://github.com/dmrickey/token-action-hud-pf1/releases/latest/download/module.zip",
+    "readme": "https://github.com/dmrickey/token-action-hud-pf1#readme",
+    "bugs": "https://github.com/dmrickey/token-action-hud-pf1/issues",
+    "protected": false,
+    "coreTranslation": false,
+    "library": false
+}

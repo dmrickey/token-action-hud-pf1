@@ -1,0 +1,44 @@
+{
+    "token-action-hud-pf1": {
+        "categories": {
+            "makeInvisible": "Make Invisible",
+            "makeVisible": "Make Visible",
+            "utility": "Utility"
+        },
+        "actions": {
+            "displayDefenses": "Display Defenses"
+        },
+        "settings": {
+            "actionLayout": {
+                "name": "Layout Type",
+                "hint": "Items, Features, Spells, etc... can have multiple actions. This lets you determine how you want them layed out. Only show the base \"item\" that is in the inventory sheet--you will have to choose from the dialog just like you used the item from the sheet, Configure a new TAH button for each individual action--this will put them in the grid alongside every other action available, or create a new subcategory for \"items\" with multiple actions and group those actions under the \"item\"--this will give you an organized tree view sorted by the \"items\" those actions belong to.",
+                "choices": {
+                    "onlyItems": "Only Items",
+                    "onlyActions": "Only Actions",
+                    "categorized": "Categorized Actions"
+                }
+            },
+            "categorizeSkills": {
+                "name": "Categorize Skills",
+                "hint": "When enabled (default) and you have multiple knowledge, craft, perform, and profression skills, they will be grouped under a category. When disabled, all skills will be shown together."
+            },
+            "showPassiveFeatures": {
+                "name": "Show Passive Features",
+                "hint": "When disabled (default), only features that can be used will show. When enabled, every feature the actor has will appear, regradless of whether or not it has an action."
+            },
+            "showPassiveInventory": {
+                "name": "Show Passive Inventory",
+                "hint": "When disabled (default), only items that can be used will be shown. When enabled, every item in the actor's inventory will show."
+            },
+            "spellPreparation": {
+                "name": "Spell Visibility",
+                "hint": "Determines which spells are visible - \"Only Remaining\" will show only your spells left that can still cast. \"All Prepared\" will show all spells that are prepared/known, even if you've already cast all available. \"All Spells\" will show you every spell in your spell book, even if they're not prepared and cannot be cast.",
+                "choices": {
+                    "onlyRemaining": "Only Remaining",
+                    "allPrepared": "All Prepared",
+                    "allSpells": "All Spells"
+                }
+            }
+        }
+    }
+}
