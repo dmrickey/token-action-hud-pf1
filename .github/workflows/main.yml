@@ -35,8 +35,13 @@ jobs:
     - run: npm run build
 
     # Create a zip file with all files required by the module to add to the release
-    - run: zip -r module.zip *
-    - working-directory: dist
+    # - run: zip -r module.zip *.*
+    # - working-directory: dist
+    - uses: vimtor/action-zip@v1
+      with:
+        files: dist/
+        recursive: false
+        dest: module.zip
 
     # Create a release for this specific version
     - name: Update Release with Files
