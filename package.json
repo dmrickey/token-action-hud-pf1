@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "build": "rollup -c",
+        "build": "rollup -cm",
         "build:dev": "rollup -wcm",
         "dev": "rollup -wcm"
     },
