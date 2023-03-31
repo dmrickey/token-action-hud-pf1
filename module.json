@@ -16,9 +16,9 @@
             "discord": "david aka claudekennilol#2244"
         }
     ],
-    "url": "https://github.com/dmrickey/token-action-hud-pf1",
+    "url": "This is auto replaced",
     "flags": {},
-    "version": "1.0.0",
+    "version": "This is auto replaced",
     "compatibility": {
         "minimum": "10",
         "verified": "10.291"
@@ -69,8 +69,8 @@
         }
     },
     "socket": false,
-    "manifest": "https://github.com/dmrickey/token-action-hud-pf1/releases/latest/download/module.json",
-    "download": "https://github.com/dmrickey/token-action-hud-pf1/releases/latest/download/module.zip",
+    "manifest": "This is auto replaced",
+    "download": "This is auto replaced",
     "readme": "https://github.com/dmrickey/token-action-hud-pf1#readme",
     "bugs": "https://github.com/dmrickey/token-action-hud-pf1/issues",
     "protected": false,
