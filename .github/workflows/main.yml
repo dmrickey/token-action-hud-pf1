@@ -35,7 +35,7 @@ jobs:
     - run: npm run build
 
     # Create a zip file with all files required by the module to add to the release
-    - run: zip -r module.zip dist/*
+    - run: zip -r module.zip dist/languages/en.json dist/module.json dist/readme.md dist/token-action-hud-pf1.css dist/token-action-hud-pf1.min.js dist/token-action-hud-pf1.min.js.map
 
     # Create a release for this specific version
     - name: Update Release with Files
