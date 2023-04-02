@@ -338,9 +338,10 @@ export class HudBuilder extends CoreActionHandler {
                 }
             });
 
+            const knowledgeName = (original) => /\(([^)]+)\)/g.exec(original)[1] || original;
             const knowledges = this.#knowledgeSkillIds.map((id) => ({
                 id,
-                name: pf1.config.skills[id],
+                name: knowledgeName(pf1.config.skills[id]),
                 encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
             }));
             const knowledgeSubcategoryData = { id: `${skillCategory.id}_knowledge`, type: 'system-derived', name: Utils.localize('PF1.KnowledgeSkills') };
