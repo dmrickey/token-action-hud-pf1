@@ -98,6 +98,10 @@ export class Settings {
         return Settings.#getSetting('skipActionDialogs', 'pf1');
     }
 
+    static get tahGrid() {
+        return Settings.#getSetting('grid', 'token-action-hud-core');
+    }
+
     static #getSetting(key, moduleId = MODULE.ID) {
         return game.settings.get(moduleId, key);
     }

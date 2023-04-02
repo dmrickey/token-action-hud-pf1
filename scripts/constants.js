@@ -41,4 +41,5 @@ export const ROLL_TYPE = {
     save: 'save',
     skill: 'skill',
     toggleSkip: 'toggleSkip',
+    toggleTahGrid: 'toggleTahGrid',
 };

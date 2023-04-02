@@ -2,10 +2,11 @@
     "token-action-hud-pf1": {
         "actions": {
             "displayDefenses": "Display Defenses",
+            "openSettings": "Open Settings",
+            "openTokenConfig": "Open Token Config",
             "toggleSkipDisabled": "Skip Dialogs is Disabled",
             "toggleSkipEnabled": "Skip Dialogs is Enabled",
-            "openSettings": "Open Settings",
-            "openTokenConfig": "Open Token Config"
+            "toggleTahGrid": "Toggle Grid"
         },
         "categories": {
             "makeInvisible": "Make Invisible",

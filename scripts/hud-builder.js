@@ -105,6 +105,11 @@ export class HudBuilder extends CoreActionHandler {
         this.addActionsToActionList(tokenActions, { id: subcategories.token.id, type: 'system' });
 
         const utilActions = [{
+            id: 'toggleTahGrid',
+            name: Utils.localize('actions.toggleTahGrid'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.toggleTahGrid),
+            cssClass: Settings.tahGrid ? ' active' : '',
+        }, {
             id: 'toggleSkip',
             name: Utils.localize(Settings.pf1SkipActionDialogs ? 'actions.toggleSkipEnabled' : 'actions.toggleSkipDisabled'),
             encodedValue: this.#_encodeData(ROLL_TYPE.toggleSkip),

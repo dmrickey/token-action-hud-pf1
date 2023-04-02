@@ -61,6 +61,7 @@ export class RollHandler extends CoreRollHandler {
             case ROLL_TYPE.save: await Promise.all(actors.map((actor) => actor.rollSavingThrow(actionId, { skipDialog: this.skipActionDialog }))); break;
             case ROLL_TYPE.skill: await Promise.all(actors.map((actor) => actor.rollSkill(actionId, { skipDialog: this.skipActionDialog }))); break;
             case ROLL_TYPE.toggleSkip: await this.#_toggleSkipDialog(); break;
+            case ROLL_TYPE.toggleTahGrid: await this.#_toggleTahGrid(); break;
             default: this.#logInvalidAction(); break;
         }
     }
@@ -185,7 +186,12 @@ export class RollHandler extends CoreRollHandler {
     }
 
     async #_toggleSkipDialog() {
-        await game.settings.set("pf1", "skipActionDialogs", !Settings.pf1SkipActionDialogs);
+        await game.settings.set('pf1', 'skipActionDialogs', !Settings.pf1SkipActionDialogs);
+        Hooks.callAll('forceUpdateTokenActionHud');
+    }
+
+    async #_toggleTahGrid() {
+        await game.settings.set('token-action-hud-core', 'grid', !Settings.tahGrid);
         Hooks.callAll('forceUpdateTokenActionHud');
     }
 }
