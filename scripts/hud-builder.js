@@ -94,8 +94,9 @@ export class HudBuilder extends CoreActionHandler {
             });
         }
 
-        if (game.permissions.TOKEN_CONFIGURE.includes(game.user.role)
-            && this.actorData.tokens.every((token) => token.isOwner)) {
+        if (game.user.can('TOKEN_CONFIGURE')
+            && this.actorData.tokens.every((token) => token.isOwner)
+        ) {
             tokenActions.push({
                 id: 'openTokenConfig',
                 name: Utils.localize('actions.openTokenConfig'),
@@ -561,7 +562,7 @@ export class HudBuilder extends CoreActionHandler {
                 this.addActionsToActionList(actions, parentSubcategoryData);
             } break;
             case 'onlyActions': {
-                const actions = (items.flatMap(([id, item]) => Utils.getItemActions(item).size > 1
+                const actions = (items.flatMap(([id, item]) => Utils.getItemActions(item).length > 1
                     ? Utils.getItemActions(item).map((action) => mapSubActionToAction(item, action, `${item.name} - ${action.name}`))
                     : mapItemToAction([id, item])));
                 this.addActionsToActionList(actions, parentSubcategoryData);
@@ -569,7 +570,7 @@ export class HudBuilder extends CoreActionHandler {
             case 'categorized':
             default: {
                 items.forEach(([id, item]) => {
-                    if (Utils.getItemActions(item).size > 1) {
+                    if (Utils.getItemActions(item).length > 1) {
                         const subActions = item.actions.map((action) => mapSubActionToAction(item, action));
 
                         const subcategoryData = { id: `${parentSubcategoryData.id}_${item.id}`, type: 'system-derived', name: item.name, info1: itemChargeInfo(item) };
