@@ -4,7 +4,8 @@
             "displayDefenses": "Display Defenses",
             "toggleSkipDisabled": "Skip Dialogs is Disabled",
             "toggleSkipEnabled": "Skip Dialogs is Enabled",
-            "openSettings": "Open Settings"
+            "openSettings": "Open Settings",
+            "openTokenConfig": "Open Token Config"
         },
         "categories": {
             "makeInvisible": "Make Invisible",

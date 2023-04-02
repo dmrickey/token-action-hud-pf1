@@ -34,6 +34,7 @@ export const ROLL_TYPE = {
     makeVisible: 'makeVisible',
     melee: 'melee',
     openSettings: 'openSettings',
+    openTokenConfig: 'openTokenConfig',
     ranged: 'ranged',
     removeFromCombat: 'removeFromCombat',
     rest: 'rest',

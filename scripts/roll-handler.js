@@ -35,7 +35,7 @@ export class RollHandler extends CoreRollHandler {
         const action = JSON.parse(encodedValue);
         this.actorData = new RollHandlerActorData(action);
 
-        const { actionId, actor, actors, enable, rollType } = this.actorData;
+        const { actionId, actor, actors, enable, rollType, tokens } = this.actorData;
 
         switch (rollType) {
             case ROLL_TYPE.abilityCheck: await Promise.all(actors.map((actor) => actor.rollAbilityTest(actionId, { skipDialog: this.skipActionDialog }))); break;
@@ -54,12 +54,13 @@ export class RollHandler extends CoreRollHandler {
             case ROLL_TYPE.makeVisible: await this.#_makeVisible(); break;
             case ROLL_TYPE.melee: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, melee: true }))); break;
             case ROLL_TYPE.openSettings: await this.#_openSettings(); break;
+            case ROLL_TYPE.openTokenConfig: tokens.map((token) => new TokenConfig(token.document).render(true)); break;
             case ROLL_TYPE.ranged: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, melee: false }))); break;
             case ROLL_TYPE.removeFromCombat: await this.#_removeFromCombat(); break;
             case ROLL_TYPE.rest: await this.#_rest(); break;
             case ROLL_TYPE.save: await Promise.all(actors.map((actor) => actor.rollSavingThrow(actionId, { skipDialog: this.skipActionDialog }))); break;
             case ROLL_TYPE.skill: await Promise.all(actors.map((actor) => actor.rollSkill(actionId, { skipDialog: this.skipActionDialog }))); break;
-            case ROLL_TYPE.toggleSkip: this.#_toggleSkipDialog(); break;
+            case ROLL_TYPE.toggleSkip: await this.#_toggleSkipDialog(); break;
             default: this.#logInvalidAction(); break;
         }
     }

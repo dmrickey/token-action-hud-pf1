@@ -79,10 +79,11 @@ export class HudBuilder extends CoreActionHandler {
         }
         this.addActionsToActionList([rest], { id: subcategories.rest.id, type: 'system' });
 
+        const tokenActions = [];
         if (game.user.isGM) {
             const isHidden = this.actorData.tokens
                 .every((token) => token.document.hidden);
-            const action = isHidden ? {
+            tokenActions.push(isHidden ? {
                 id: 'makeVisible',
                 name: Utils.localize('categories.makeVisible'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.makeVisible),
@@ -90,22 +91,30 @@ export class HudBuilder extends CoreActionHandler {
                 id: 'makeInvisible',
                 name: Utils.localize('categories.makeInvisible'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.makeInvisible),
-            };
-            this.addActionsToActionList([action], { id: subcategories.token.id, type: 'system' });
+            });
         }
 
-        const toggleSkip = {
+        if (game.permissions.TOKEN_CONFIGURE.includes(game.user.role)
+            && this.actorData.tokens.every((token) => token.isOwner)) {
+            tokenActions.push({
+                id: 'openTokenConfig',
+                name: Utils.localize('actions.openTokenConfig'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.openTokenConfig),
+            });
+        };
+        this.addActionsToActionList(tokenActions, { id: subcategories.token.id, type: 'system' });
+
+        const utilActions = [{
             id: 'toggleSkip',
             name: Utils.localize(Settings.pf1SkipActionDialogs ? 'actions.toggleSkipEnabled' : 'actions.toggleSkipDisabled'),
             encodedValue: this.#_encodeData(ROLL_TYPE.toggleSkip),
             cssClass: Settings.pf1SkipActionDialogs ? ' active' : '',
-        };
-        const openSettings = {
+        }, {
             id: 'openSettings',
             name: Utils.localize('actions.openSettings'),
             encodedValue: this.#_encodeData(ROLL_TYPE.openSettings),
-        };
-        this.addActionsToActionList([toggleSkip, openSettings], { id: subcategories.utility.id, type: 'system' });
+        }];
+        this.addActionsToActionList(utilActions, { id: subcategories.utility.id, type: 'system' });
     }
 
     #_buildCombat() {
@@ -115,40 +124,33 @@ export class HudBuilder extends CoreActionHandler {
         const currentInitiativeInfo = this.actorData.isMulti || !this.actorData.inCombat || !needsInitiative
             ? {}
             : { text: this.actorData.combatant.initiative };
-        const basicActions = [
-            {
-                id: 'showDefenses',
-                name: Utils.localize('actions.displayDefenses'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.defenses),
-            },
-            {
-                id: 'bab',
-                name: Utils.localize('PF1.BABAbbr'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.bab),
-            },
-            {
-                id: 'cmb',
-                name: Utils.localize('PF1.CMBAbbr'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.cmb),
-            },
-            {
-                id: 'melee',
-                name: Utils.localize('PF1.Melee'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.melee),
-            },
-            {
-                id: 'ranged',
-                name: Utils.localize('PF1.Ranged'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.ranged),
-            },
-            {
-                id: 'initiative',
-                name: Utils.localize('PF1.Initiative'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
-                cssClass: needsInitiative ? ' active' : '',
-                info1: currentInitiativeInfo,
-            },
-        ];
+        const basicActions = [{
+            id: 'showDefenses',
+            name: Utils.localize('actions.displayDefenses'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.defenses),
+        }, {
+            id: 'bab',
+            name: Utils.localize('PF1.BABAbbr'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.bab),
+        }, {
+            id: 'cmb',
+            name: Utils.localize('PF1.CMBAbbr'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.cmb),
+        }, {
+            id: 'melee',
+            name: Utils.localize('PF1.Melee'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.melee),
+        }, {
+            id: 'ranged',
+            name: Utils.localize('PF1.Ranged'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.ranged),
+        }, {
+            id: 'initiative',
+            name: Utils.localize('PF1.Initiative'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
+            cssClass: needsInitiative ? ' active' : '',
+            info1: currentInitiativeInfo,
+        }];
 
         if (game.user.isGM) {
             const action = this.actorData.inCombat ? {
