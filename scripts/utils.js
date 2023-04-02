@@ -27,14 +27,18 @@ export class Utils {
     static canUseItem = (item) => this.#itemHasActions(item) || !!item.getScriptCalls("use").length;
     static getItemActions = (item) => {
         const actions = item.actions;
-        const unchained = game.settings.get('pf1', 'unchainedActionEconomy');
+        return actions ? [...actions] : [];
+        // const unchained = game.settings.get('pf1', 'unchainedActionEconomy');
+
         // disabling this but leaving it here for future use -- "passive" actions are still actions because they can still be used.
         // const isActive = (action) => unchained
         //     ? action.data.unchainedAction?.activation?.type && action.data.unchainedAction.activation.type !== 'passive'
         //     : action.data.activation?.type && action.data.activation?.type !== 'passive';
-        const isAction = (action) => unchained
-            ? action.data.unchainedAction?.activation?.type
-            : action.data.activation?.type;
-        return (actions || []).filter(isAction);
+
+        // leaving this here again -- it seems right, but an action might not have an activation type configured but can still be used
+        // const isAction = (action) => unchained
+        //     ? action.data.unchainedAction?.activation?.type
+        //     : action.data.activation?.type;
+        // return (actions || []).filter(isAction);
     }
 }
