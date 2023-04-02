@@ -75,7 +75,7 @@ export class HudBuilder extends CoreActionHandler {
         const rest = {
             id: 'rest',
             name: Utils.localize('PF1.Rest'),
-            encodedValue: this.#_encodeData(ROLL_TYPE.rest, 'addToCombat'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.rest),
         }
         this.addActionsToActionList([rest], { id: subcategories.rest.id, type: 'system' });
 
@@ -85,14 +85,27 @@ export class HudBuilder extends CoreActionHandler {
             const action = isHidden ? {
                 id: 'makeVisible',
                 name: Utils.localize('categories.makeVisible'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.makeVisible, 'makeVisible'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.makeVisible),
             } : {
                 id: 'makeInvisible',
                 name: Utils.localize('categories.makeInvisible'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.makeInvisible, 'makeInvisible'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.makeInvisible),
             };
             this.addActionsToActionList([action], { id: subcategories.token.id, type: 'system' });
         }
+
+        const toggleSkip = {
+            id: 'toggleSkip',
+            name: Utils.localize(Settings.pf1SkipActionDialogs ? 'actions.toggleSkipEnabled' : 'actions.toggleSkipDisabled'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.toggleSkip),
+            cssClass: Settings.pf1SkipActionDialogs ? ' active' : '',
+        };
+        const openSettings = {
+            id: 'openSettings',
+            name: Utils.localize('actions.openSettings'),
+            encodedValue: this.#_encodeData(ROLL_TYPE.openSettings),
+        };
+        this.addActionsToActionList([toggleSkip, openSettings], { id: subcategories.utility.id, type: 'system' });
     }
 
     #_buildCombat() {
@@ -106,32 +119,32 @@ export class HudBuilder extends CoreActionHandler {
             {
                 id: 'showDefenses',
                 name: Utils.localize('actions.displayDefenses'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.defenses, 'showDefenses'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.defenses),
             },
             {
                 id: 'bab',
                 name: Utils.localize('PF1.BABAbbr'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.bab, 'bab'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.bab),
             },
             {
                 id: 'cmb',
                 name: Utils.localize('PF1.CMBAbbr'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.cmb, 'cmb'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.cmb),
             },
             {
                 id: 'melee',
                 name: Utils.localize('PF1.Melee'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.melee, 'melee'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.melee),
             },
             {
                 id: 'ranged',
                 name: Utils.localize('PF1.Ranged'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.ranged, 'ranged'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.ranged),
             },
             {
                 id: 'initiative',
                 name: Utils.localize('PF1.Initiative'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.initiative, 'initiative'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
                 cssClass: needsInitiative ? ' active' : '',
                 info1: currentInitiativeInfo,
             },
@@ -141,11 +154,11 @@ export class HudBuilder extends CoreActionHandler {
             const action = this.actorData.inCombat ? {
                 id: 'removeFromCombat',
                 name: Utils.localize('COMBAT.CombatantRemove'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.removeFromCombat, 'removeFromCombat'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.removeFromCombat),
             } : {
                 id: 'addToCombat',
                 name: Utils.localize('COMBAT.CombatantCreate'),
-                encodedValue: this.#_encodeData(ROLL_TYPE.addToCombat, 'addToCombat'),
+                encodedValue: this.#_encodeData(ROLL_TYPE.addToCombat),
             };
             basicActions.push(action);
         }
@@ -157,7 +170,7 @@ export class HudBuilder extends CoreActionHandler {
                 basicActions.push({
                     id: 'endTurn',
                     name: game.i18n.translations.COMBAT.TurnEnd,
-                    encodedValue: this.#_encodeData(ROLL_TYPE.endTurn, 'endTurn'),
+                    encodedValue: this.#_encodeData(ROLL_TYPE.endTurn),
                 });
             }
         }

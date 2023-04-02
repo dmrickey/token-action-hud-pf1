@@ -2,22 +2,28 @@ import { Utils } from './utils.js'
 
 // Core Module Imports
 import { CoreRollHandler } from './config.js'
-import { ROLL_TYPE } from './constants.js';
+import { MODULE, ROLL_TYPE } from './constants.js';
 import { RollHandlerActorData } from '../models/actor-data.js';
+import { Settings } from './settings.js';
 
 export class RollHandler extends CoreRollHandler {
 
     actorData = new RollHandlerActorData();
 
     get skipActionDialog() {
-        const setting = game.settings.get('pf1', 'skipActionDialogs');
-        return setting !== this.shift;
+        const skip = Settings.pf1SkipActionDialogs;
+        return skip !== this.shift;
     }
 
-    logInvalidMulti = () => {
+    #logInvalidMulti = () => {
         console.error(`TAH - this shouldn't happen`, action);
         ui.notifications.warn(`TAH tried to perform an action that wasn't intended for multiple tokens`);
     };
+
+    #logInvalidAction = () => {
+        console.error(`TAH - this shouldn't happen`, action);
+        ui.notifications.warn(`TAH tried to perform an action that doesn't exist`);
+    }
 
     /**
      * Handle Action Event
@@ -36,9 +42,9 @@ export class RollHandler extends CoreRollHandler {
             case ROLL_TYPE.addToCombat: await this.#_addToCombat(); break;
             case ROLL_TYPE.bab: await Promise.all(actors.map((actor) => actor.rollBAB({ skipDialog: this.skipActionDialog }))); break;
             case ROLL_TYPE.buff: await this.#_rollBuff(); break;
-            case ROLL_TYPE.casterLevel: this.actorData.isMulti ? this.logInvalidMulti() : await actor.rollCL(book, { skipDialog: this.skipActionDialog }); break;
+            case ROLL_TYPE.casterLevel: this.actorData.isMulti ? this.#logInvalidMulti() : await actor.rollCL(book, { skipDialog: this.skipActionDialog }); break;
             case ROLL_TYPE.cmb: await Promise.all(actors.map((actor) => actor.rollCMB({ skipDialog: this.skipActionDialog }))); break;
-            case ROLL_TYPE.concentration: this.actorData.isMulti ? this.logInvalidMulti() : await actor.rollConcentration(book, { skipDialog: this.skipActionDialog }); break;
+            case ROLL_TYPE.concentration: this.actorData.isMulti ? this.#logInvalidMulti() : await actor.rollConcentration(book, { skipDialog: this.skipActionDialog }); break;
             case ROLL_TYPE.condition: await Promise.all(actors.map((actor) => actor.setCondition(actionId, enable))); break;
             case ROLL_TYPE.defenses: await Promise.all(actors.map((actor) => actor.rollDefenses({ skipDialog: this.skipActionDialog }))); break;
             case ROLL_TYPE.endTurn: this.#_endTurn(); break;
@@ -47,11 +53,14 @@ export class RollHandler extends CoreRollHandler {
             case ROLL_TYPE.makeInvisible: await this.#_makeInvisible(); break;
             case ROLL_TYPE.makeVisible: await this.#_makeVisible(); break;
             case ROLL_TYPE.melee: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, melee: true }))); break;
+            case ROLL_TYPE.openSettings: await this.#_openSettings(); break;
             case ROLL_TYPE.ranged: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, melee: false }))); break;
             case ROLL_TYPE.removeFromCombat: await this.#_removeFromCombat(); break;
             case ROLL_TYPE.rest: await this.#_rest(); break;
             case ROLL_TYPE.save: await Promise.all(actors.map((actor) => actor.rollSavingThrow(actionId, { skipDialog: this.skipActionDialog }))); break;
             case ROLL_TYPE.skill: await Promise.all(actors.map((actor) => actor.rollSkill(actionId, { skipDialog: this.skipActionDialog }))); break;
+            case ROLL_TYPE.toggleSkip: this.#_toggleSkipDialog(); break;
+            default: this.#logInvalidAction(); break;
         }
     }
 
@@ -68,29 +77,9 @@ export class RollHandler extends CoreRollHandler {
         Hooks.callAll('forceUpdateTokenActionHud');
     }
 
-    async #_removeFromCombat() {
-        const combat = game.combat;
-        if (!combat) {
-            return;
-        }
-
-        if (canvas.tokens.controlled.length) {
-            await canvas.tokens.toggleCombat(false, combat);
-        }
-        else {
-            const { actorId, tokenId } = this.actorData;
-            const combatant = combat.combatants.find((combatant) => combatant.actorId === actorId && combatant.tokenId === tokenId);
-            if (combatant) {
-                await combat.deleteEmbeddedDocuments('Combatant', [combatant.id]);
-            }
-        }
-
-        Hooks.callAll('forceUpdateTokenActionHud');
-    }
-
     async #_endTurn() {
         if (this.actorData.isMulti) {
-            this.logInvalidMulti();
+            this.#logInvalidMulti();
             return;
         }
 
@@ -120,13 +109,48 @@ export class RollHandler extends CoreRollHandler {
         );
     }
 
+    async #_openSettings() {
+        new SettingsConfig().render(true);
+        await new Promise(r => setTimeout(r, 100)).then(() => ui.activeWindow.activateTab(MODULE.ID));
+    }
+
+    async #_removeFromCombat() {
+        const combat = game.combat;
+        if (!combat) {
+            return;
+        }
+
+        if (canvas.tokens.controlled.length) {
+            await canvas.tokens.toggleCombat(false, combat);
+        }
+        else {
+            const { actorId, tokenId } = this.actorData;
+            const combatant = combat.combatants.find((combatant) => combatant.actorId === actorId && combatant.tokenId === tokenId);
+            if (combatant) {
+                await combat.deleteEmbeddedDocuments('Combatant', [combatant.id]);
+            }
+        }
+
+        Hooks.callAll('forceUpdateTokenActionHud');
+    }
+
     async #_rest() {
         this.actorData.actors.forEach((actor) => new pf1.applications.actor.ActorRestDialog(actor).render(true));
     }
 
+    async #_rollBuff() {
+        const { enable, isMulti, item: buff } = this.actorData;
+        if (isMulti) {
+            this.#logInvalidMulti();
+            return;
+        }
+
+        await buff.setActive(enable);
+    }
+
     async #_rollItem() {
         if (this.actorData.isMulti) {
-            this.logInvalidMulti();
+            this.#logInvalidMulti();
             return;
         }
 
@@ -154,19 +178,13 @@ export class RollHandler extends CoreRollHandler {
                 item.use({ skipDialog: this.skipActionDialog });
             }
             else {
-                // show chat card
                 item.displayCard();
             }
         }
     }
 
-    async #_rollBuff() {
-        const { enable, isMulti, item: buff } = this.actorData;
-        if (isMulti) {
-            this.logInvalidMulti();
-            return;
-        }
-
-        await buff.setActive(enable);
+    async #_toggleSkipDialog() {
+        await game.settings.set("pf1", "skipActionDialogs", !Settings.pf1SkipActionDialogs);
+        Hooks.callAll('forceUpdateTokenActionHud');
     }
 }

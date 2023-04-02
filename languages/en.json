@@ -1,12 +1,15 @@
 {
     "token-action-hud-pf1": {
+        "actions": {
+            "displayDefenses": "Display Defenses",
+            "toggleSkipDisabled": "Skip Dialogs is Disabled",
+            "toggleSkipEnabled": "Skip Dialogs is Enabled",
+            "openSettings": "Open Settings"
+        },
         "categories": {
             "makeInvisible": "Make Invisible",
             "makeVisible": "Make Visible",
             "utility": "Utility"
-        },
-        "actions": {
-            "displayDefenses": "Display Defenses"
         },
         "settings": {
             "actionLayout": {

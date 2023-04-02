@@ -94,7 +94,11 @@ export class Settings {
         return Settings.#getSetting(keys.spellPreparation);
     }
 
-    static #getSetting(key) {
-        return game.settings.get(MODULE.ID, key);
+    static get pf1SkipActionDialogs() {
+        return Settings.#getSetting('skipActionDialogs', 'pf1');
+    }
+
+    static #getSetting(key, moduleId = MODULE.ID) {
+        return game.settings.get(moduleId, key);
     }
 }

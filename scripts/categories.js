@@ -118,6 +118,7 @@ export const CATEGORY_MAP = {
         subcategories: {
             rest: { id: 'utility_rest', name: 'PF1.Rest' },
             token: { id: 'utility_token', name: 'Token' }, // gm-only: make (in)visible
+            utility: { id: 'utility_utility', name: 'categories.utility' },
         },
     },
 };
