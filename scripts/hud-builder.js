@@ -47,14 +47,20 @@ export class HudBuilder extends CoreActionHandler {
         'weapon',
     ];
 
-    /** @override */
+    /**
+     * This override lets me call with a fully defined subcategory without blowing up core logic
+     *  @override */
     addActionsToActionList(actions, subcateogry) {
-        super.addActionsToActionList(actions, { name: subcateogry.name, id: subcateogry.id });
+        const { name, id } = subcateogry;
+        super.addActionsToActionList(actions, { name, id });
     }
 
-    /** @override */
+    /**
+     * This override lets me call with a fully defined subcategory without blowing up core logic
+     *  @override */
     addSubcategoryToActionList(parentSubcategoryData, subcategoryData) {
-        super.addSubcategoryToActionList({ type: parentSubcategoryData.type, id: parentSubcategoryData.id }, subcategoryData);
+        const { type, id } = parentSubcategoryData;
+        super.addSubcategoryToActionList({ type, id }, subcategoryData);
     }
 
     #_buildChecks() {
