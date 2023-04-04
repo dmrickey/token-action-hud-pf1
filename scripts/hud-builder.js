@@ -47,6 +47,16 @@ export class HudBuilder extends CoreActionHandler {
         'weapon',
     ];
 
+    /** @override */
+    addActionsToActionList(actions, subcateogry) {
+        super.addActionsToActionList(actions, { name: subcateogry.name, id: subcateogry.id });
+    }
+
+    /** @override */
+    addSubcategoryToActionList(parentSubcategoryData, subcategoryData) {
+        super.addSubcategoryToActionList({ type: parentSubcategoryData.type, id: parentSubcategoryData.id }, subcategoryData);
+    }
+
     #_buildChecks() {
         const saves = Object.keys(pf1.config.abilities);
 
