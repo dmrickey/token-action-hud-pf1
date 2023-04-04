@@ -55,7 +55,7 @@ export class HudBuilder extends CoreActionHandler {
             name: pf1.config.abilities[key],
             encodedValue: this.#_encodeData(ROLL_TYPE.abilityCheck, key),
         }));
-        this.addActionsToActionList(actions, { id: CATEGORY_MAP.checks.subcategories.checks.id, type: 'system' });
+        this.addActionsToActionList(actions, CATEGORY_MAP.checks.subcategories.checks);
     }
 
     #_buildSaves() {
@@ -66,7 +66,7 @@ export class HudBuilder extends CoreActionHandler {
             name: pf1.config.savingThrows[key],
             encodedValue: this.#_encodeData(ROLL_TYPE.save, key),
         }));
-        this.addActionsToActionList(actions, { id: CATEGORY_MAP.saves.subcategories.saves.id, type: 'system' });
+        this.addActionsToActionList(actions, CATEGORY_MAP.saves.subcategories.saves);
     }
 
     #_buildUtils() {
@@ -77,7 +77,7 @@ export class HudBuilder extends CoreActionHandler {
             name: Utils.localize('PF1.Rest'),
             encodedValue: this.#_encodeData(ROLL_TYPE.rest),
         }
-        this.addActionsToActionList([rest], { id: subcategories.rest.id, type: 'system' });
+        this.addActionsToActionList([rest], subcategories.rest);
 
         const tokenActions = [];
         if (game.user.isGM) {
@@ -103,7 +103,7 @@ export class HudBuilder extends CoreActionHandler {
                 encodedValue: this.#_encodeData(ROLL_TYPE.openTokenConfig),
             });
         };
-        this.addActionsToActionList(tokenActions, { id: subcategories.token.id, type: 'system' });
+        this.addActionsToActionList(tokenActions, subcategories.token);
 
         const utilActions = [{
             id: 'toggleTahGrid',
@@ -120,7 +120,7 @@ export class HudBuilder extends CoreActionHandler {
             name: Utils.localize('actions.openSettings'),
             encodedValue: this.#_encodeData(ROLL_TYPE.openSettings),
         }];
-        this.addActionsToActionList(utilActions, { id: subcategories.utility.id, type: 'system' });
+        this.addActionsToActionList(utilActions, subcategories.utility);
     }
 
     #_buildCombat() {
@@ -183,24 +183,24 @@ export class HudBuilder extends CoreActionHandler {
             }
         }
 
-        this.addActionsToActionList(basicActions, { id: subcategories.base.id, type: 'system' });
+        this.addActionsToActionList(basicActions, subcategories.base);
 
         if (this.actorData.isMulti) {
             return;
         }
 
         const filter = (subType) => (item) => item.type === 'attack' && item.subType === subType;
-        this.#_buildFilteredItemActions(filter('weapon'), subcategories.weaponAttaack.id);
-        this.#_buildFilteredItemActions(filter('natural'), subcategories.naturalAttack.id);
-        this.#_buildFilteredItemActions(filter('ability'), subcategories.classAbilities.id);
-        this.#_buildFilteredItemActions(filter('racialAbility'), subcategories.racialAbilities.id);
-        this.#_buildFilteredItemActions(filter('item'), subcategories.items.id);
-        this.#_buildFilteredItemActions(filter('misc'), subcategories.miscellaneous.id);
+        this.#_buildFilteredItemActions(filter('weapon'), subcategories.weaponAttaack);
+        this.#_buildFilteredItemActions(filter('natural'), subcategories.naturalAttack);
+        this.#_buildFilteredItemActions(filter('ability'), subcategories.classAbilities);
+        this.#_buildFilteredItemActions(filter('racialAbility'), subcategories.racialAbilities);
+        this.#_buildFilteredItemActions(filter('item'), subcategories.items);
+        this.#_buildFilteredItemActions(filter('misc'), subcategories.miscellaneous);
 
         // leftovers that could be from other mods or from a change in pf1
         const otherFilter = (item) => item.type === 'attack'
             && !['weapon', 'natural', 'ability', 'racialAbility', 'item', 'misc',].includes(item.subType);
-        this.#_buildFilteredItemActions(otherFilter, subcategories.other.id, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
     }
 
     #_buildBuffs() {
@@ -216,25 +216,25 @@ export class HudBuilder extends CoreActionHandler {
             name: item.name,
         });
 
-        const addBuffs = (subType, subcategoryId) => {
+        const addBuffs = (subType, subcategory) => {
             const buffs = this.actorData.items
                 .filter(([_id, item]) => item.type === 'buff' && item.subType === subType)
                 .map(mapBuffs);
-            this.addActionsToActionList(buffs, { id: subcategoryId, type: 'system' });
+            this.addActionsToActionList(buffs, subcategory);
         }
 
         const { subcategories } = CATEGORY_MAP.buffs;
 
-        addBuffs('item', subcategories.item.id);
-        addBuffs('temp', subcategories.temporary.id);
-        addBuffs('perm', subcategories.permanent.id);
-        addBuffs('misc', subcategories.miscellaneous.id);
+        addBuffs('item', subcategories.item);
+        addBuffs('temp', subcategories.temporary);
+        addBuffs('perm', subcategories.permanent);
+        addBuffs('misc', subcategories.miscellaneous);
 
         // leftovers that could be from other mods or from a change in pf1
         const otherBuffs = this.actorData.items
             .filter(([_id, item]) => item.type === 'buff' && !['item', 'temp', 'perm', 'misc'].includes(item.subType))
             .map(mapBuffs);
-        this.addActionsToActionList(otherBuffs, { id: subcategories.other.id, type: 'system' });
+        this.addActionsToActionList(otherBuffs, subcategories.other);
     }
 
     #_buildFeatures() {
@@ -245,21 +245,21 @@ export class HudBuilder extends CoreActionHandler {
         const { subcategories } = CATEGORY_MAP.features;
 
         const filter = (subType) => (item) => item.type === 'feat' && item.subType === subType;
-        this.#_buildFilteredItemActions(filter('classFeat'), subcategories.classFeat.id, Settings.showPassiveFeatures);
-        this.#_buildFilteredItemActions(filter('feat'), subcategories.feat.id, Settings.showPassiveFeatures);
-        this.#_buildFilteredItemActions(filter('racial'), subcategories.racial.id, Settings.showPassiveFeatures);
-        this.#_buildFilteredItemActions(filter('template'), subcategories.template.id, Settings.showPassiveFeatures);
-        this.#_buildFilteredItemActions(filter('trait'), subcategories.trait.id, Settings.showPassiveFeatures);
-        this.#_buildFilteredItemActions(filter('misc'), subcategories.misc.id, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('classFeat'), subcategories.classFeat, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('feat'), subcategories.feat, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('racial'), subcategories.racial, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('template'), subcategories.template, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('trait'), subcategories.trait, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('misc'), subcategories.misc, Settings.showPassiveFeatures);
 
         // features added by spheres of power mod
-        this.#_buildFilteredItemActions(filter('combatTalent'), subcategories.combatTalents.id, Settings.showPassiveFeatures);
-        this.#_buildFilteredItemActions(filter('magicTalent'), subcategories.magicTalents.id, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('combatTalent'), subcategories.combatTalents, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter('magicTalent'), subcategories.magicTalents, Settings.showPassiveFeatures);
 
         // leftovers that could be from other mods or from a change in pf1
         const otherFilter = (item) => item.type === 'feat'
             && !['classFeat', 'feat', 'racial', 'template', 'trait', 'misc', 'combatTalent', 'magicTalent'].includes(item.subType);
-        this.#_buildFilteredItemActions(otherFilter, subcategories.other.id, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
     }
 
     #_buildOtherItems() {
@@ -270,7 +270,7 @@ export class HudBuilder extends CoreActionHandler {
         const { subcategories } = CATEGORY_MAP.other;
 
         const filter = (item) => !this.#_handledItemTypes.includes(item.type);
-        this.#_buildFilteredItemActions(filter, subcategories.other.id, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(filter, subcategories.other, Settings.showPassiveFeatures);
     }
 
     #_buildInventory() {
@@ -280,24 +280,24 @@ export class HudBuilder extends CoreActionHandler {
 
         const { subcategories } = CATEGORY_MAP.inventory;
 
-        this.#_buildFilteredItemActions((item) => item.type === 'weapon', subcategories.weapons.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'equipment', subcategories.equipment.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'consumable', subcategories.consumables.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'container', subcategories.containers.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'tradeGoods', subcategories.tradeGoods.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'misc', subcategories.miscellaneous.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'ammo', subcategories.ammunition.id, Settings.showPassiveInventory);
-        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'gear', subcategories.gear.id, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'weapon', subcategories.weapons, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'equipment', subcategories.equipment, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'consumable', subcategories.consumables, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'container', subcategories.containers, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'tradeGoods', subcategories.tradeGoods, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'misc', subcategories.miscellaneous, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'ammo', subcategories.ammunition, Settings.showPassiveInventory);
+        this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'gear', subcategories.gear, Settings.showPassiveInventory);
 
         // leftovers that could be from other mods or from a change in pf1
         const otherFilter = (item) => (item.type === 'loot' && !['tradeGoods', 'misc', 'ammo', 'gear'].includes(item.subType));
-        this.#_buildFilteredItemActions(otherFilter, subcategories.other.id, Settings.showPassiveFeatures);
+        this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
     }
 
     #subSkillIds = ['art', 'crf', 'lor', 'prf', 'pro'];
     #knowledgeSkillIds = ['kar', 'kdu', 'ken', 'kge', 'khi', 'klo', 'kna', 'kno', 'kpl', 'kre'];
     #_buildSkills() {
-        const skillCategory = { id: CATEGORY_MAP.skills.subcategories.skills.id, type: 'system' };
+        const skillCategory = CATEGORY_MAP.skills.subcategories.skills;
 
         const actorSkills = this.actorData.isMulti
             ? pf1.config.skills
@@ -329,18 +329,24 @@ export class HudBuilder extends CoreActionHandler {
                         encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
                     }))
                     : [];
-                const groupedActions = [{
-                    id,
-                    name: pf1.config.skills[id] || actorSkills[id].name,
-                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                },
-                ...subskills];
+                const groupedActions = [
+                    {
+                        id,
+                        name: pf1.config.skills[id] || actorSkills[id].name,
+                        encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                    },
+                    ...subskills,
+                ];
 
                 if (groupedActions.length === 1) {
                     actions.push(groupedActions[0]);
                 }
                 else {
-                    const subcategoryData = { id: `${skillCategory.id}_${id}`, type: 'system-derived', name: groupedActions[0].name };
+                    const subcategoryData = {
+                        id: `${skillCategory.id}-${id}`,
+                        name: groupedActions[0].name,
+                        type: 'system-derived',
+                    };
                     this.addSubcategoryToActionList(skillCategory, subcategoryData);
                     this.addActionsToActionList(groupedActions, subcategoryData);
                 }
@@ -352,7 +358,11 @@ export class HudBuilder extends CoreActionHandler {
                 name: knowledgeName(pf1.config.skills[id]),
                 encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
             }));
-            const knowledgeSubcategoryData = { id: `${skillCategory.id}_knowledge`, type: 'system-derived', name: Utils.localize('PF1.KnowledgeSkills') };
+            const knowledgeSubcategoryData = {
+                id: `${skillCategory.id}-knowledge`,
+                name: Utils.localize('PF1.KnowledgeSkills'),
+                type: 'system-derived',
+            };
             this.addSubcategoryToActionList(skillCategory, knowledgeSubcategoryData);
             this.addActionsToActionList(knowledges, knowledgeSubcategoryData);
 
@@ -389,7 +399,7 @@ export class HudBuilder extends CoreActionHandler {
             };
         });
 
-        this.addActionsToActionList(actions, { id: CATEGORY_MAP.conditions.subcategories.conditions.id, type: 'system' });
+        this.addActionsToActionList(actions, CATEGORY_MAP.conditions.subcategories.conditions);
     }
 
     #_buildSpells() {
@@ -397,7 +407,7 @@ export class HudBuilder extends CoreActionHandler {
             return;
         }
 
-        const spellCategoryId = CATEGORY_MAP.spells.subcategories.spells.id;
+        const spellCategory = CATEGORY_MAP.spells.subcategories.spells;
         const allSpells = this.actorData.items
             .filter(([_id, item]) => item.type === 'spell' && Utils.canUseItem(item));
 
@@ -409,16 +419,15 @@ export class HudBuilder extends CoreActionHandler {
         const { spellbooks } = this.actorData.actor.system.attributes.spells;
         const levels = Array.from(Array(10).keys());
 
-        const parentSubcategoryData = { id: spellCategoryId, type: 'system' };
         spellbookKeys.forEach((key) => {
             const spellbook = spellbooks[key];
             const spellbookCategory = {
                 hasDerivedSubcategories: true,
-                id: `${spellCategoryId}_${key}.`,
+                id: `${spellCategory.id}-${key}`,
                 name: Utils.localize(spellbook.label) || spellbook.name,
                 type: 'system-derived',
             };
-            this.addSubcategoryToActionList(parentSubcategoryData, spellbookCategory);
+            this.addSubcategoryToActionList(spellCategory, spellbookCategory);
 
             // todo add roll icons
             const basicActions = [
@@ -454,7 +463,7 @@ export class HudBuilder extends CoreActionHandler {
             levels.forEach((level) => {
                 const levelCategory = {
                     hasDerivedSubcategories: true,
-                    id: `${spellbookCategory.id}_${level}.`,
+                    id: `${spellbookCategory.id}-${level}`,
                     name: Utils.localize(`PF1.SpellLevel${level}`),
                     type: 'system-derived',
                 };
@@ -476,21 +485,25 @@ export class HudBuilder extends CoreActionHandler {
         });
     }
 
-    #_buildFilteredItemActions(filter, subcategoryId, includeUnusable = false) {
+    #_buildFilteredItemActions(filter, subcategory, includeUnusable = false) {
         if (this.actorData.isMulti) {
             return;
         }
 
         const filtered = this.actorData.items
             .filter(([_id, item]) => filter(item) && Utils.canUseItem(item));
-        const parentSubcategoryData = { id: subcategoryId, type: 'system' };
-        this.#_addItemActionsToCategory(filtered, parentSubcategoryData);
+        this.#_addItemActionsToCategory(filtered, subcategory);
 
         if (includeUnusable) {
             const unusable = this.actorData.items
                 .filter(([_id, item]) => filter(item) && !Utils.canUseItem(item));
-            const subcategoryData = { id: `${parentSubcategoryData.id}_unusable`, type: 'system-derived', name: Utils.localize('PF1.ActivationTypePassive') };
-            this.addSubcategoryToActionList(parentSubcategoryData, subcategoryData);
+            const subcategoryData = {
+                hasDerivedSubcategories: true,
+                id: `${subcategory.id}-unusable`,
+                name: Utils.localize('PF1.ActivationTypePassive'),
+                type: 'system-derived',
+            };
+            this.addSubcategoryToActionList(subcategory, subcategoryData);
             this.#_addItemActionsToCategory(unusable, subcategoryData);
         }
     }
@@ -573,7 +586,12 @@ export class HudBuilder extends CoreActionHandler {
                     if (Utils.getItemActions(item).length > 1) {
                         const subActions = item.actions.map((action) => mapSubActionToAction(item, action));
 
-                        const subcategoryData = { id: `${parentSubcategoryData.id}_${item.id}`, type: 'system-derived', name: item.name, info1: itemChargeInfo(item) };
+                        const subcategoryData = {
+                            id: `${parentSubcategoryData.id}-${item.id}`,
+                            info1: itemChargeInfo(item),
+                            name: item.name,
+                            type: 'system-derived',
+                        };
                         this.addSubcategoryToActionList(parentSubcategoryData, subcategoryData);
                         this.addActionsToActionList(subActions, subcategoryData);
                     }
