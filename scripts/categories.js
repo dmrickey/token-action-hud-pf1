@@ -159,5 +159,4 @@ Hooks.on('i18nInit', async () => {
         categories,
         subcategories: allSubcategories,
     };
-    debugger;
 });
