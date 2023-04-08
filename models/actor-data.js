@@ -1,5 +1,5 @@
-import { CoreUtils } from "../scripts/config";
 import { ROLL_TYPE } from "../scripts/constants";
+import { Utils } from "../scripts/utils";
 
 export class ActionBuilderActorData {
     #_knownActorTypes = ['character', 'npc'];
@@ -72,13 +72,13 @@ export class RollHandlerActorData extends ActionBuilderActorData {
         const { actorId, book, enable, tokenId, actionId, rollType, subActionId } = action;
         const itemId = [ROLL_TYPE.buff, ROLL_TYPE.item].includes(rollType) ? actionId : '';
 
-        const actor = CoreUtils.getActor(actorId, tokenId);
-        const token = CoreUtils.getToken(tokenId);
+        const actor = Utils.getActor(actorId, tokenId);
+        const token = Utils.getToken(tokenId);
 
         super({ actor, token });
 
         if (itemId) {
-            this.item = CoreUtils.getItem(actor, action.actionId);
+            this.item = Utils.getItem(actor, action.actionId);
 
             if (subActionId) {
                 this.subAction = this.item.actions.find((a) => a.id === subActionId);

@@ -1,5 +1,4 @@
 import { MODULE } from './constants.js'
-import { Logger } from './config.js'
 
 export class Utils {
     static isEmptyObject = (obj) => !Object.keys(obj).length;
@@ -40,5 +39,37 @@ export class Utils {
         //     ? action.data.unchainedAction?.activation?.type
         //     : action.data.activation?.type;
         // return (actions || []).filter(isAction);
+    }
+
+    /**
+     * Get actor from the token or actor object
+     * @param {string} actorId The actor id
+     * @param {string} tokenId The token id
+     * @returns {object}       The actor
+     */
+    static getActor(actorId, tokenId) {
+        let token = null
+        if (tokenId) token = canvas.tokens.placeables.find((token) => token.id === tokenId)
+        if (token) return token.actor
+        return game.actors.get(actorId)
+    }
+
+    /**
+     * Get item from the actor object
+     * @param {object} actor  The actor
+     * @param {string} itemId The item id
+     * @returns {object}      The item
+     */
+    static getItem(actor, itemId) {
+        return actor.items.get(itemId)
+    }
+
+    /**
+     * Get token
+     * @param {string} tokenId The token id
+     * @returns {object}       The token
+     */
+    static getToken(tokenId) {
+        return canvas.tokens.placeables.find((token) => token.id === tokenId)
     }
 }
