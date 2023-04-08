@@ -8,6 +8,7 @@ import { Utils } from './utils.js';
 const keys = {
     actionLayout: 'actionLayout',
     categorizeSkills: 'categorizeSkills',
+    migrationVersion: 'migrationVersion',
     showPassiveFeatures: 'showPassiveFeatures',
     showPassiveInventory: 'showPassiveInventory',
     spellPreparation: 'spellPreparation',
@@ -24,7 +25,6 @@ export function register(updateFunc) {
 
     const settings = {
         [keys.actionLayout]: {
-            ...defaultSetting,
             choices: {
                 'onlyItems': Utils.localize('settings.actionLayout.choices.onlyItems'),
                 'onlyActions': Utils.localize('settings.actionLayout.choices.onlyActions'),
@@ -34,17 +34,14 @@ export function register(updateFunc) {
             type: String,
         },
         [keys.categorizeSkills]: {
-            ...defaultSetting,
             default: true,
             type: Boolean,
         },
         [keys.showPassiveFeatures]: {
-            ...defaultSetting,
             default: false,
             type: Boolean,
         },
         [keys.showPassiveInventory]: {
-            ...defaultSetting,
             default: false,
             type: Boolean,
         },
@@ -61,13 +58,14 @@ export function register(updateFunc) {
     };
 
     Object.keys(settings)
-        .forEach((key) => {
+        .forEach((key) =>
             game.settings.register(MODULE.ID, key, {
+                ...defaultSetting,
                 name: Utils.localize(`settings.${key}.name`),
                 hint: Utils.localize(`settings.${key}.hint`),
                 ...settings[key],
             })
-        });
+        );
 }
 
 export class Settings {
@@ -80,6 +78,14 @@ export class Settings {
 
     static get categorizeSkills() {
         return Settings.#getSetting(keys.categorizeSkills);
+    }
+
+    static get migrationVersion() {
+        return Settings.#getSetting(keys.migrationVersion);
+    }
+
+    static set migrationVersion(version) {
+        Settings.#setSetting(keys.migrationVersion, version);
     }
 
     static get showPassiveFeatures() {
@@ -102,7 +108,21 @@ export class Settings {
         return Settings.#getSetting('grid', 'token-action-hud-core');
     }
 
+    static async toggleSkipDialog() {
+        const current = Settings.pf1SkipActionDialogs;
+        await Settings.#setSetting('skipActionDialogs', !current, 'pf1');
+    }
+
+    static async toggleTahGrid() {
+        const current = Settings.tahGrid;
+        await Settings.#setSetting('grid', !current, 'token-action-hud-core');
+    }
+
     static #getSetting(key, moduleId = MODULE.ID) {
         return game.settings.get(moduleId, key);
+    }
+
+    static async #setSetting(key, value, moduleId = MODULE.ID) {
+        await game.settings.set(moduleId, key, value);
     }
 }

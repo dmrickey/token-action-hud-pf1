@@ -2,48 +2,50 @@
 import { CATEGORIES } from './categories.js'
 import { HudBuilder } from './hud-builder.js';
 import { RollHandler as Core } from './roll-handler.js'
+import { Utils } from './utils.js';
 import * as systemSettings from './settings.js'
 
-// Core Module Imports
-import { CoreSystemManager, CoreCategoryManager, CoreUtils } from './config.js'
+export let SystemManager = null
 
-export class SystemManager extends CoreSystemManager {
-    /** @override */
-    doGetCategoryManager(_user) {
-        return new CoreCategoryManager();
-    }
+Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
+    SystemManager = class SystemManager extends coreModule.api.SystemManager {
+        /** @override */
+        doGetCategoryManager(_user) {
+            return new coreModule.api.CategoryManager();
+        }
 
-    /** @override */
-    doGetActionHandler(categoryManager) {
-        const actionHandler = new HudBuilder(categoryManager);
-        return actionHandler;
-    }
+        /** @override */
+        doGetActionHandler(categoryManager) {
+            const actionHandler = new HudBuilder(categoryManager);
+            return actionHandler;
+        }
 
-    /** @override */
-    getAvailableRollHandlers() {
-        const coreTitle = CoreUtils.i18n('PF1.Default');
+        /** @override */
+        getAvailableRollHandlers() {
+            const coreTitle = Utils.localize('PF1.Default');
 
-        const choices = { core: coreTitle };
+            const choices = { core: coreTitle };
 
-        return choices;
-    }
+            return choices;
+        }
 
-    /** @override */
-    doGetRollHandler(handlerId) {
-        switch (handlerId) {
-            case 'core':
-            default:
-                return new Core();
+        /** @override */
+        doGetRollHandler(handlerId) {
+            switch (handlerId) {
+                case 'core':
+                default:
+                    return new Core();
+            }
+        }
+
+        /** @override */
+        doRegisterSettings(updateFunc) {
+            systemSettings.register(updateFunc);
+        }
+
+        /** @override */
+        async doRegisterDefaultFlags() {
+            return CATEGORIES;
         }
     }
-
-    /** @override */
-    doRegisterSettings(updateFunc) {
-        systemSettings.register(updateFunc);
-    }
-
-    /** @override */
-    async doRegisterDefaultFlags() {
-        return CATEGORIES;
-    }
-}
+});
