@@ -58,11 +58,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         /**
-         * This override lets me call with a fully defined subcategory without blowing up core logic
+         * This override lets me call with a fully defined parent subcategory without blowing up core logic
          *  @override */
         addSubcategoryToActionList(parentSubcategoryData, subcategoryData) {
             const { type, id } = parentSubcategoryData;
             super.addSubcategoryToActionList({ type, id }, subcategoryData);
+
+            if (subcategoryData.info1 && !Utils.isEmptyObject(subcategoryData.info1)) {
+                const data = {
+                    id: subcategoryData.id,
+                    type: subcategoryData.type,
+                    info: { info1: subcategoryData.info1 },
+                };
+                this.addSubcategoryInfo(data);
+            }
         }
 
         #_buildChecks() {

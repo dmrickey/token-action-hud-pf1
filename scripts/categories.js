@@ -10,7 +10,7 @@ export const CATEGORY_MAP = {
         id: 'combat',
         name: 'PF1.Combat',
         subcategories: {
-            base: { id: 'combat-base', name: 'PF1.Base' },
+            base: { id: 'combat-base', name: 'PF1.Base', advancedCategoryOptions: { showTitle: false } },
             attack: { id: 'combat-attack', name: 'PF1.Attacks' },
             weaponAttaack: { id: 'combat-weaponAttack', name: 'PF1.AttackTypeWeaponPlural', hasDerivedSubcategories: true },
             naturalAttack: { id: 'combat-naturalAttack', name: 'PF1.AttackTypeNaturalPlural', hasDerivedSubcategories: true },
@@ -54,7 +54,7 @@ export const CATEGORY_MAP = {
         id: 'spells',
         name: 'PF1.Spells',
         subcategories: {
-            spells: { id: 'spells-spells', name: 'PF1.Spells', hasDerivedSubcategories: true, },
+            spells: { id: 'spells-spells', name: 'PF1.Spells', hasDerivedSubcategories: true, advancedCategoryOptions: { showTitle: false } },
         },
     },
     features: {
@@ -87,28 +87,28 @@ export const CATEGORY_MAP = {
         id: 'skills',
         name: 'PF1.Skills',
         subcategories: {
-            skills: { id: 'skills-skills', name: 'PF1.Skills', hasDerivedSubcategories: true },
+            skills: { id: 'skills-skills', name: 'PF1.Skills', hasDerivedSubcategories: true, advancedCategoryOptions: { showTitle: false } },
         },
     },
     saves: {
         id: 'saves',
         name: 'PF1.SavingThrowPlural',
         subcategories: {
-            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural' },
+            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural', advancedCategoryOptions: { showTitle: false } },
         },
     },
     checks: {
         id: 'checks',
         name: 'PF1.BuffTarAbilityChecks',
         subcategories: {
-            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks' },
+            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks', advancedCategoryOptions: { showTitle: false } },
         },
     },
     conditions: {
         id: 'conditions',
         name: 'PF1.ConditionPlural',
         subcategories: {
-            conditions: { id: 'conditions-conditions', name: 'PF1.ConditionPlural' },
+            conditions: { id: 'conditions-conditions', name: 'PF1.ConditionPlural', advancedCategoryOptions: { showTitle: false } },
         },
     },
     utility: {
