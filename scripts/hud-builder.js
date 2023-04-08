@@ -312,7 +312,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
         }
 
-        #subSkillIds = ['art', 'crf', 'lor', 'prf', 'pro'];
         #knowledgeSkillIds = ['kar', 'kdu', 'ken', 'kge', 'khi', 'klo', 'kna', 'kno', 'kpl', 'kre'];
         #_buildSkills() {
             const skillCategory = CATEGORY_MAP.skills.subcategories.skills;
@@ -329,7 +328,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             if (Settings.categorizeSkills) {
                 const skills = skillIds
-                    .filter((id) => !this.#subSkillIds.includes(id))
+                    .filter((id) => this.actorData.isMulti || Utils.isEmptyObject(actorSkills[id].subSkills || {}))
                     .filter((id) => !this.#knowledgeSkillIds.includes(id))
                     .map((id) => ({ id, name: pf1.config.skills[id] || actorSkills[id].name }));
                 const actions = skills.map(({ id, name }) => ({
@@ -338,41 +337,48 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                 }));
 
-                this.#subSkillIds.forEach((id) => {
-                    const subSkillIds = actorSkills[id].subSkills;
-                    const subskills = subSkillIds
-                        ? Object.keys(subSkillIds).map((sid) => ({
-                            id: `${id}.subSkills.${sid}`,
-                            name: subSkillIds[sid].name,
-                            encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
-                        }))
-                        : [];
-                    const groupedActions = [
-                        {
-                            id,
-                            name: pf1.config.skills[id] || actorSkills[id].name,
-                            encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                        },
-                        ...subskills,
-                    ];
+                if (!this.actorData.isMulti) {
+                    const subSkillIds = Object.keys(actorSkills).filter((id) => !Utils.isEmptyObject(actorSkills[id].subSkills || {}));
+                    subSkillIds.forEach((id) => {
+                        const subSkillIds = actorSkills[id].subSkills;
+                        const subskills = subSkillIds
+                            ? Object.keys(subSkillIds).map((sid) => ({
+                                id: `categorized-${id}.subSkills.${sid}`,
+                                name: subSkillIds[sid].name,
+                                encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
+                            }))
+                            : [];
 
-                    if (groupedActions.length === 1) {
-                        actions.push(groupedActions[0]);
-                    }
-                    else {
-                        const subcategoryData = {
-                            id: `${skillCategory.id}-${id}`,
-                            name: groupedActions[0].name,
-                            type: 'system-derived',
-                        };
-                        this.addSubcategoryToActionList(skillCategory, subcategoryData);
-                        this.addActionsToActionList(groupedActions, subcategoryData);
-                    }
-                });
+                        if (subskills.length) {
+                            const groupedActions = [
+                                {
+                                    id: `categorized-${id}`,
+                                    name: pf1.config.skills[id] || actorSkills[id].name,
+                                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                                },
+                                ...subskills,
+                            ];
+                            const subcategoryData = {
+                                id: `${skillCategory.id}-${id}`,
+                                name: groupedActions[0].name,
+                                type: 'system-derived',
+                            };
+                            this.addSubcategoryToActionList(skillCategory, subcategoryData);
+                            this.addActionsToActionList(groupedActions, subcategoryData);
+                        }
+                        else {
+                            actions.push({
+                                id,
+                                name: pf1.config.skills[id] || actorSkills[id].name,
+                                encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                            });
+                        }
+                    });
+                }
 
                 const knowledgeName = (original) => /\(([^)]+)\)/g.exec(original)[1] || original;
                 const knowledges = this.#knowledgeSkillIds.map((id) => ({
-                    id,
+                    id: `categorized-${id}`,
                     name: knowledgeName(pf1.config.skills[id]),
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                 }));
@@ -385,7 +391,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.addActionsToActionList(knowledges, knowledgeSubcategoryData);
 
                 const sorted = [...actions].sort((a, b) => a.name < b.name ? -1 : 1);
-
                 this.addActionsToActionList(sorted, skillCategory);
             }
             else {
@@ -568,8 +573,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return { text: values.join(', '), class: 'charged' };
             }
 
-            const mapItemToAction = ([id, item]) => ({
-                id,
+            const mapItemToAction = ([id, item], idType) => ({
+                id: `${idType}-${id}`,
                 img: item.img,
                 name: item.name,
                 encodedValue: this.#_encodeData(ROLL_TYPE.item, id),
@@ -577,8 +582,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info2: info2(item),
                 info3: itemChargeInfo(item),
             });
-            const mapSubActionToAction = (item, action, name = action.name) => ({
-                id: action.id,
+            const mapSubActionToAction = (item, action, idType, { name } = { name: action.name }) => ({
+                id: `${idType}-${action.id}`,
                 img: item.img,
                 name: name,
                 encodedValue: this.#_encodeData(ROLL_TYPE.item, item.id, { subActionId: action.id }),
@@ -589,20 +594,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             switch (Settings.actionLayout) {
                 case 'onlyItems': {
-                    const actions = items.map(mapItemToAction);
+                    const actions = items.map(([id, item]) => mapItemToAction([id, item], 'onlyItems'));
                     this.addActionsToActionList(actions, parentSubcategoryData);
                 } break;
                 case 'onlyActions': {
                     const actions = (items.flatMap(([id, item]) => Utils.getItemActions(item).length > 1
-                        ? Utils.getItemActions(item).map((action) => mapSubActionToAction(item, action, `${item.name} - ${action.name}`))
-                        : mapItemToAction([id, item])));
+                        ? Utils.getItemActions(item).map((action) => mapSubActionToAction(item, action, 'onlyActions', { name: `${item.name} - ${action.name}` }))
+                        : mapItemToAction([id, item], 'onlyActions')));
                     this.addActionsToActionList(actions, parentSubcategoryData);
                 } break;
                 case 'categorized':
                 default: {
                     items.forEach(([id, item]) => {
                         if (Utils.getItemActions(item).length > 1) {
-                            const subActions = item.actions.map((action) => mapSubActionToAction(item, action));
+                            const subActions = item.actions.map((action) => mapSubActionToAction(item, action, 'categorized'));
 
                             const subcategoryData = {
                                 id: `${parentSubcategoryData.id}-${item.id}`,
@@ -615,7 +620,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         }
                         else {
                             // has a use script call or a single action
-                            const action = mapItemToAction([id, item]);
+                            const action = mapItemToAction([id, item], 'categorized');
                             this.addActionsToActionList([action], parentSubcategoryData);
                         }
                     });
