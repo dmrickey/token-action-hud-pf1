@@ -134,6 +134,7 @@ Hooks.on('i18nInit', async () => {
                 subMap.nestId = `${catMap.nestId || catMap.id}_${subMap.id}`;
                 subMap.type = 'system';
                 subMap.hasDerivedSubcategories = !!subMap.hasDerivedSubcategories;
+                subMap.listName = `${catMap.name} - ${subMap.name}`;
                 const sub = {
                     ...subMap,
                     type: 'system',

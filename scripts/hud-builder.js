@@ -11,11 +11,11 @@ export class HudBuilder extends CoreActionHandler {
     /**
      * Build System Actions
      * @override
-     * @param {object} character
      * @param {array} subcategoryIds
      */
-    async buildSystemActions(character, _subcategoryIds) {
-        this.actorData = new ActionBuilderActorData(character);
+    async buildSystemActions(_subcategoryIds) {
+        const { actor, token } = this;
+        this.actorData = new ActionBuilderActorData({ actor, token });
 
         if (!this.actorData.isValid) {
             return;

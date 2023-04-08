@@ -51,11 +51,9 @@ export class ActionBuilderActorData {
                 : [];
     }
 
-    constructor(character) {
-        character ||= {};
+    constructor({ actor, token } = { actor: {}, token: {} }) {
         if (!canvas.tokens.controlled.length) {
             // covers the case for "always show my actor bar" when this is called without a selection
-            const { actor, token } = character;
             this.#_fallbackActor = actor;
             this.#_fallbackToken = token;
         }
