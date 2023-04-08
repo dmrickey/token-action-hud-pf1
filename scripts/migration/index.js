@@ -11,7 +11,7 @@ const migrate = async () => {
 
     const lastMigrated = Settings.migrationVersion || 1;
 
-    if (foundry.utils.isNewerVersion('1.1.4', lastMigrated)) {
+    if (foundry.utils.isNewerVersion('1.2.0', lastMigrated)) {
         await game.user.unsetFlag(CORE_MODULE.ID, 'categories');
         await game.user.unsetFlag(CORE_MODULE.ID, 'default.categories');
     }
