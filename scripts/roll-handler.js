@@ -186,12 +186,12 @@ export class RollHandler extends CoreRollHandler {
     }
 
     async #_toggleSkipDialog() {
-        await game.settings.set('pf1', 'skipActionDialogs', !Settings.pf1SkipActionDialogs);
+        await Settings.toggleSkipDialog();
         Hooks.callAll('forceUpdateTokenActionHud');
     }
 
     async #_toggleTahGrid() {
-        await game.settings.set('token-action-hud-core', 'grid', !Settings.tahGrid);
+        await Settings.toggleTahGrid();
         Hooks.callAll('forceUpdateTokenActionHud');
     }
 }
