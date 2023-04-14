@@ -14,18 +14,15 @@
         }
     }
 
-    .action-nulled-out .roll-modifier {
+    .action-nulled-out .roll-modifier,
+    .action-nulled-out .tah-action-button-text {
         opacity: .6;
     }
 
-    .action-nulled-out .tah-action-button-text {
-        opacity: .6;
-
+    .action-nulled-out .tah-action-button-content {
         &::before {
             content: "Ø";
-            color: #9e1d3d;
-            margin-inline-end: 0.3em;
-            opacity: unset;
+            color: #cf4e6e;
         }
     }
 
