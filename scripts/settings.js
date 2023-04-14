@@ -9,6 +9,7 @@ const keys = {
     actionLayout: 'actionLayout',
     categorizeSkills: 'categorizeSkills',
     migrationVersion: 'migrationVersion',
+    showModifiers: 'showModifiers',
     showPassiveFeatures: 'showPassiveFeatures',
     showPassiveInventory: 'showPassiveInventory',
     spellPreparation: 'spellPreparation',
@@ -32,6 +33,10 @@ export function register(updateFunc) {
             },
             default: 'categorized',
             type: String,
+        },
+        [keys.showModifiers]: {
+            default: true,
+            type: Boolean,
         },
         [keys.categorizeSkills]: {
             default: true,
@@ -86,6 +91,13 @@ export class Settings {
 
     static set migrationVersion(version) {
         Settings.#setSetting(keys.migrationVersion, version);
+    }
+
+    /**
+     * @returns {boolean} Should show roll modifiers
+     */
+    static get showModifiers() {
+        return Settings.#getSetting(keys.showModifiers);
     }
 
     static get showPassiveFeatures() {

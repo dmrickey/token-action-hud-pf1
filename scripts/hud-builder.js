@@ -57,20 +57,31 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             super.addActionsToActionList(actions, { name, id });
         }
 
+        // could change this to directly take an info object instead if more than just "info1" is needed later
+        #hasInfoChanged(sub1, sub2) {
+            return sub1?.info1?.class !== sub2?.info1?.class
+                || sub1?.info1?.title !== sub2?.info1?.title
+                || sub1?.info1?.text !== sub2?.info1?.text;
+        }
+
         /**
          * This override lets me call with a fully defined parent subcategory without blowing up core logic
          *  @override */
         addSubcategoryToActionList(parentSubcategoryData, subcategoryData) {
             const { type, id } = parentSubcategoryData;
-            super.addSubcategoryToActionList({ type, id }, subcategoryData);
 
-            if (subcategoryData.info1 && !Utils.isEmptyObject(subcategoryData.info1)) {
-                const data = {
-                    id: subcategoryData.id,
-                    type: subcategoryData.type,
-                    info: { info1: subcategoryData.info1 },
-                };
-                this.addSubcategoryInfo(data);
+            const current = game.tokenActionHud.categoryManager.flattenedSubcategories
+                .find((sub) => sub.id === subcategoryData.id)
+            const infoChanged = !!current && this.#hasInfoChanged(subcategoryData, current);
+
+            if (!infoChanged) {
+                super.addSubcategoryToActionList({ type, id }, subcategoryData);
+            }
+            else {
+                const current = game.tokenActionHud.categoryManager.flattenedSubcategories
+                    .find((sub) => sub.id === subcategoryData.id) || subcategoryData;
+                current.info1 = subcategoryData.info1;
+                super.addSubcategoryToActionList({ type, id }, current, true);
             }
         }
 
@@ -79,8 +90,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const actions = saves.map((key) => ({
                 id: key,
-                name: pf1.config.abilities[key],
+                info1: this.#modToInfo(this.actorData.actor.system.abilities[key].mod),
                 encodedValue: this.#_encodeData(ROLL_TYPE.abilityCheck, key),
+                name: pf1.config.abilities[key],
             }));
             this.addActionsToActionList(actions, CATEGORY_MAP.checks.subcategories.checks);
         }
@@ -90,8 +102,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const actions = saves.map((key) => ({
                 id: key,
-                name: pf1.config.savingThrows[key],
                 encodedValue: this.#_encodeData(ROLL_TYPE.save, key),
+                info1: this.#modToInfo(this.actorData.actor.system.attributes.savingThrows[key].total),
+                name: pf1.config.savingThrows[key],
             }));
             this.addActionsToActionList(actions, CATEGORY_MAP.saves.subcategories.saves);
         }
@@ -153,9 +166,24 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         #_buildCombat() {
             const { subcategories } = CATEGORY_MAP.combat;
 
+            let meleeMod, rangedMod;
+
+            if (this.actorData.isSingle) {
+                const { system } = this.actorData.actor;
+                const attributes = system.attributes;
+                const abilities = system.abilities;
+                const sizeModifier = pf1.config.sizeMods[system.traits.size];
+                const baseBonus = attributes.attack.shared + attributes.attack.general + sizeModifier;
+                const meleeAbility = abilities[attributes.attack.meleeAbility]?.mod ?? 0;
+                const rangedAbility = abilities[attributes.attack.rangedAbility]?.mod ?? 0;
+
+                meleeMod = baseBonus + attributes.attack.melee + meleeAbility;
+                rangedMod = baseBonus + attributes.attack.ranged + rangedAbility;
+            }
+
             const needsInitiative = !this.actorData.isMulti && this.actorData.inCombat && this.actorData.combatant.initiative !== null;
             const currentInitiativeInfo = this.actorData.isMulti || !this.actorData.inCombat || !needsInitiative
-                ? {}
+                ? undefined
                 : { text: this.actorData.combatant.initiative };
             const basicActions = [{
                 id: 'showDefenses',
@@ -163,26 +191,30 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 encodedValue: this.#_encodeData(ROLL_TYPE.defenses),
             }, {
                 id: 'bab',
-                name: Utils.localize('PF1.BABAbbr'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.bab),
+                info1: this.#modToInfo(this.actorData.actor.system.attributes.bab.total),
+                name: Utils.localize('PF1.BABAbbr'),
             }, {
                 id: 'cmb',
-                name: Utils.localize('PF1.CMBAbbr'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.cmb),
+                info1: this.#modToInfo(this.actorData.actor.system.attributes.cmb.total),
+                name: Utils.localize('PF1.CMBAbbr'),
             }, {
                 id: 'melee',
-                name: Utils.localize('PF1.Melee'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.melee),
+                info1: currentInitiativeInfo || this.#modToInfo(meleeMod),
+                name: Utils.localize('PF1.Melee'),
             }, {
                 id: 'ranged',
-                name: Utils.localize('PF1.Ranged'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.ranged),
+                info1: currentInitiativeInfo || this.#modToInfo(rangedMod),
+                name: Utils.localize('PF1.Ranged'),
             }, {
                 id: 'initiative',
                 name: Utils.localize('PF1.Initiative'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
                 cssClass: needsInitiative ? ' active' : '',
-                info1: currentInitiativeInfo,
+                info1: currentInitiativeInfo || this.#modToInfo(this.actorData.actor.system.attributes.init.total),
             }];
 
             if (game.user.isGM) {
@@ -321,6 +353,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
         }
 
+        #toSignedString = (mod) => !mod ? '±0' : mod > 0 ? `+${mod}` : `${mod}`;
+        #modToInfo = (mod) => Settings.showModifiers && this.actorData.isSingle ? { class: 'roll-modifier', text: this.#toSignedString(mod) } : undefined;
+
         #knowledgeSkillIds = ['kar', 'kdu', 'ken', 'kge', 'khi', 'klo', 'kna', 'kno', 'kpl', 'kre'];
         #_buildSkills() {
             const skillCategory = CATEGORY_MAP.skills.subcategories.skills;
@@ -342,30 +377,36 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     .map((id) => ({ id, name: pf1.config.skills[id] || actorSkills[id].name }));
                 const actions = skills.map(({ id, name }) => ({
                     id,
-                    name: name,
+                    cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                    info1: this.#modToInfo(actorSkills[id]?.mod),
+                    name: name,
                 }));
 
-                if (!this.actorData.isMulti) {
+                if (this.actorData.isSingle) {
                     const subSkillIds = Object.keys(actorSkills).filter((id) => !Utils.isEmptyObject(actorSkills[id].subSkills || {}));
                     subSkillIds.forEach((id) => {
-                        const subSkillIds = actorSkills[id].subSkills;
-                        const subskills = subSkillIds
-                            ? Object.keys(subSkillIds).map((sid) => ({
+                        const currentSubskills = actorSkills[id].subSkills;
+                        const subskillActions = currentSubskills
+                            ? Object.keys(currentSubskills).map((sid) => ({
                                 id: `categorized-${id}.subSkills.${sid}`,
-                                name: subSkillIds[sid].name,
+                                cssClass: currentSubskills[sid].rt && !currentSubskills[sid].rank ? 'action-nulled-out' : '',
                                 encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
+                                info1: this.#modToInfo(currentSubskills[sid].mod),
+                                name: currentSubskills[sid].name,
                             }))
                             : [];
 
-                        if (subskills.length) {
+                        if (subskillActions.length) {
                             const groupedActions = [
                                 {
                                     id: `categorized-${id}`,
-                                    name: pf1.config.skills[id] || actorSkills[id].name,
+                                    cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                                    info1: this.#modToInfo(actorSkills[id].mod),
+                                    name: pf1.config.skills[id] || actorSkills[id].name,
                                 },
-                                ...subskills,
+                                ...subskillActions,
                             ];
                             const subcategoryData = {
                                 id: `${skillCategory.id}-${id}`,
@@ -376,10 +417,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                             this.addActionsToActionList(groupedActions, subcategoryData);
                         }
                         else {
+                            // if there are no subskills don't categorize it
+                            // (e.g. if the actor doesn't have any specific "perform" skills, then just put the single generic "perform" skill alongside the rest of the non-categorized skills)
                             actions.push({
                                 id,
-                                name: pf1.config.skills[id] || actorSkills[id].name,
+                                cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                                 encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                                info1: this.#modToInfo(actorSkills[id].mod),
+                                name: pf1.config.skills[id] || actorSkills[id].name,
                             });
                         }
                     });
@@ -388,8 +433,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const knowledgeName = (original) => /\(([^)]+)\)/g.exec(original)[1] || original;
                 const knowledges = this.#knowledgeSkillIds.map((id) => ({
                     id: `categorized-${id}`,
-                    name: knowledgeName(pf1.config.skills[id]),
+                    cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                    info1: this.#modToInfo(actorSkills[id]?.mod),
+                    name: knowledgeName(pf1.config.skills[id]),
                 }));
                 const knowledgeSubcategoryData = {
                     id: `${skillCategory.id}-knowledge`,
@@ -409,8 +456,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const skills = [...skillIds.map((id) => ({ id, name: pf1.config.skills[id] || actorSkills[id].name })), ...skillIds.flatMap(getSubskills)];
                 const actions = skills.map(({ id, name }) => ({
                     id,
-                    name: name,
+                    cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                    info1: this.#modToInfo(actorSkills[id]?.mod),
+                    name: name,
                 }));
                 const sorted = [...actions].sort((a, b) => a.name < b.name ? -1 : 1);
 

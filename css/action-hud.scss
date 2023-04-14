@@ -13,4 +13,23 @@
             margin: .2rem;
         }
     }
+
+    .action-nulled-out .roll-modifier {
+        opacity: .6;
+    }
+
+    .action-nulled-out .tah-action-button-text {
+        opacity: .6;
+
+        &::before {
+            content: "Ø";
+            color: #9e1d3d;
+            margin-inline-end: 0.3em;
+            opacity: unset;
+        }
+    }
+
+    .roll-modifier {
+        font-size: 1rem;
+    }
 }

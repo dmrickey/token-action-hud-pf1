@@ -16,6 +16,7 @@ export class ActionBuilderActorData {
     get actorId() { return this.actor?.id; }
     get actorIds() { return this.actors?.map(x => x.id) ?? []; }
     get isMulti() { return (this.actors?.length ?? 0) > 1; }
+    get isSingle() { return !this.isMulti; }
     get tokenId() { return this.token?.id; }
     get tokenIds() { return this.tokens?.map(x => x.id) ?? []; }
 
