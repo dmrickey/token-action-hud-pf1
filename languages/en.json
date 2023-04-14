@@ -27,6 +27,10 @@
                 "name": "Categorize Skills",
                 "hint": "When enabled (default) and you have multiple knowledge, craft, perform, and profression skills, they will be grouped under a category. When disabled, all skills will be shown together."
             },
+            "showModifiers": {
+                "name": "Show Modifiers",
+                "hint": "When enabled (default), appropriate modifiers will be shown within the action buttons."
+            },
             "showPassiveFeatures": {
                 "name": "Show Passive Features",
                 "hint": "When disabled (default), only features that can be used will show. When enabled, every feature the actor has will appear, regradless of whether or not it has an action."
