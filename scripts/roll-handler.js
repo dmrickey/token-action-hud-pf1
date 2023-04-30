@@ -37,7 +37,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const action = JSON.parse(encodedValue);
             this.actorData = new RollHandlerActorData(action);
 
-            const { actionId, actor, actors, enable, rollType, tokens } = this.actorData;
+            const { actionId, actor, actors, book, enable, rollType, tokens } = this.actorData;
 
             switch (rollType) {
                 case ROLL_TYPE.abilityCheck: await Promise.all(actors.map((actor) => actor.rollAbilityTest(actionId, { skipDialog: this.skipActionDialog }))); break;
