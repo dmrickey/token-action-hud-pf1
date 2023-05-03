@@ -96,7 +96,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 encodedValue: this.#_encodeData(ROLL_TYPE.abilityCheck, key),
                 name: pf1.config.abilities[key],
             }));
-            this.addActionsToActionList(actions, CATEGORY_MAP.checks.subcategories.checks);
+            this.addActionsToActionList(actions, CATEGORY_MAP.checks.groups.checks);
         }
 
         #_buildSaves() {
@@ -108,18 +108,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info1: this.#modToInfo(this.actorData.actor.system.attributes.savingThrows[key].total),
                 name: pf1.config.savingThrows[key],
             }));
-            this.addActionsToActionList(actions, CATEGORY_MAP.saves.subcategories.saves);
+            this.addActionsToActionList(actions, CATEGORY_MAP.saves.groups.saves);
         }
 
         #_buildUtils() {
-            const { subcategories } = CATEGORY_MAP.utility;
+            const { groups } = CATEGORY_MAP.utility;
 
             const rest = {
                 id: 'rest',
                 name: Utils.localize('PF1.Rest'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.rest),
             }
-            this.addActionsToActionList([rest], subcategories.rest);
+            this.addActionsToActionList([rest], groups.rest);
 
             const tokenActions = [];
             if (game.user.isGM) {
@@ -145,7 +145,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     encodedValue: this.#_encodeData(ROLL_TYPE.openTokenConfig),
                 });
             };
-            this.addActionsToActionList(tokenActions, subcategories.token);
+            this.addActionsToActionList(tokenActions, groups.token);
 
             const utilActions = [{
                 id: 'toggleTahGrid',
@@ -162,11 +162,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: Utils.localize('actions.openSettings'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.openSettings),
             }];
-            this.addActionsToActionList(utilActions, subcategories.utility);
+            this.addActionsToActionList(utilActions, groups.utility);
         }
 
         #_buildCombat() {
-            const { subcategories } = CATEGORY_MAP.combat;
+            const { groups } = CATEGORY_MAP.combat;
 
             let meleeMod, rangedMod;
 
@@ -244,24 +244,24 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 }
             }
 
-            this.addActionsToActionList(basicActions, subcategories.base);
+            this.addActionsToActionList(basicActions, groups.base);
 
             if (this.actorData.isMulti) {
                 return;
             }
 
             const filter = (subType) => (item) => item.type === 'attack' && item.subType === subType;
-            this.#_buildFilteredItemActions(filter('weapon'), subcategories.weaponAttaack);
-            this.#_buildFilteredItemActions(filter('natural'), subcategories.naturalAttack);
-            this.#_buildFilteredItemActions(filter('ability'), subcategories.classAbilities);
-            this.#_buildFilteredItemActions(filter('racialAbility'), subcategories.racialAbilities);
-            this.#_buildFilteredItemActions(filter('item'), subcategories.items);
-            this.#_buildFilteredItemActions(filter('misc'), subcategories.miscellaneous);
+            this.#_buildFilteredItemActions(filter('weapon'), groups.weaponAttaack);
+            this.#_buildFilteredItemActions(filter('natural'), groups.naturalAttack);
+            this.#_buildFilteredItemActions(filter('ability'), groups.classAbilities);
+            this.#_buildFilteredItemActions(filter('racialAbility'), groups.racialAbilities);
+            this.#_buildFilteredItemActions(filter('item'), groups.items);
+            this.#_buildFilteredItemActions(filter('misc'), groups.miscellaneous);
 
             // leftovers that could be from other mods or from a change in pf1
             const otherFilter = (item) => item.type === 'attack'
                 && !['weapon', 'natural', 'ability', 'racialAbility', 'item', 'misc',].includes(item.subType);
-            this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(otherFilter, groups.other, Settings.showPassiveFeatures);
         }
 
         #_buildBuffs() {
@@ -284,18 +284,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.addActionsToActionList(buffs, subcategory);
             }
 
-            const { subcategories } = CATEGORY_MAP.buffs;
+            const { groups } = CATEGORY_MAP.buffs;
 
-            addBuffs('item', subcategories.item);
-            addBuffs('temp', subcategories.temporary);
-            addBuffs('perm', subcategories.permanent);
-            addBuffs('misc', subcategories.miscellaneous);
+            addBuffs('item', groups.item);
+            addBuffs('temp', groups.temporary);
+            addBuffs('perm', groups.permanent);
+            addBuffs('misc', groups.miscellaneous);
 
             // leftovers that could be from other mods or from a change in pf1
             const otherBuffs = this.actorData.items
                 .filter(([_id, item]) => item.type === 'buff' && !['item', 'temp', 'perm', 'misc'].includes(item.subType))
                 .map(mapBuffs);
-            this.addActionsToActionList(otherBuffs, subcategories.other);
+            this.addActionsToActionList(otherBuffs, groups.other);
         }
 
         #_buildFeatures() {
@@ -303,24 +303,24 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const { subcategories } = CATEGORY_MAP.features;
+            const { groups } = CATEGORY_MAP.features;
 
             const filter = (subType) => (item) => item.type === 'feat' && item.subType === subType;
-            this.#_buildFilteredItemActions(filter('classFeat'), subcategories.classFeat, Settings.showPassiveFeatures);
-            this.#_buildFilteredItemActions(filter('feat'), subcategories.feat, Settings.showPassiveFeatures);
-            this.#_buildFilteredItemActions(filter('racial'), subcategories.racial, Settings.showPassiveFeatures);
-            this.#_buildFilteredItemActions(filter('template'), subcategories.template, Settings.showPassiveFeatures);
-            this.#_buildFilteredItemActions(filter('trait'), subcategories.trait, Settings.showPassiveFeatures);
-            this.#_buildFilteredItemActions(filter('misc'), subcategories.misc, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('classFeat'), groups.classFeat, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('feat'), groups.feat, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('racial'), groups.racial, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('template'), groups.template, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('trait'), groups.trait, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('misc'), groups.misc, Settings.showPassiveFeatures);
 
             // features added by spheres of power mod
-            this.#_buildFilteredItemActions(filter('combatTalent'), subcategories.combatTalents, Settings.showPassiveFeatures);
-            this.#_buildFilteredItemActions(filter('magicTalent'), subcategories.magicTalents, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('combatTalent'), groups.combatTalents, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter('magicTalent'), groups.magicTalents, Settings.showPassiveFeatures);
 
             // leftovers that could be from other mods or from a change in pf1
             const otherFilter = (item) => item.type === 'feat'
                 && !['classFeat', 'feat', 'racial', 'template', 'trait', 'misc', 'combatTalent', 'magicTalent'].includes(item.subType);
-            this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(otherFilter, groups.other, Settings.showPassiveFeatures);
         }
 
         #_buildOtherItems() {
@@ -328,10 +328,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const { subcategories } = CATEGORY_MAP.other;
+            const { groups } = CATEGORY_MAP.other;
 
             const filter = (item) => !this.#_handledItemTypes.includes(item.type);
-            this.#_buildFilteredItemActions(filter, subcategories.other, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(filter, groups.other, Settings.showPassiveFeatures);
         }
 
         #_buildInventory() {
@@ -339,20 +339,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const { subcategories } = CATEGORY_MAP.inventory;
+            const { groups } = CATEGORY_MAP.inventory;
 
-            this.#_buildFilteredItemActions((item) => item.type === 'weapon', subcategories.weapons, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'equipment', subcategories.equipment, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'consumable', subcategories.consumables, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'container', subcategories.containers, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'tradeGoods', subcategories.tradeGoods, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'misc', subcategories.miscellaneous, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'ammo', subcategories.ammunition, Settings.showPassiveInventory);
-            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'gear', subcategories.gear, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'weapon', groups.weapons, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'equipment', groups.equipment, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'consumable', groups.consumables, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'container', groups.containers, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'tradeGoods', groups.tradeGoods, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'misc', groups.miscellaneous, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'ammo', groups.ammunition, Settings.showPassiveInventory);
+            this.#_buildFilteredItemActions((item) => item.type === 'loot' && item.subType === 'gear', groups.gear, Settings.showPassiveInventory);
 
             // leftovers that could be from other mods or from a change in pf1
             const otherFilter = (item) => (item.type === 'loot' && !['tradeGoods', 'misc', 'ammo', 'gear'].includes(item.subType));
-            this.#_buildFilteredItemActions(otherFilter, subcategories.other, Settings.showPassiveFeatures);
+            this.#_buildFilteredItemActions(otherFilter, groups.other, Settings.showPassiveFeatures);
         }
 
         #toSignedString = (mod) => !mod ? '±0' : mod > 0 ? `+${mod}` : `${mod}`;
@@ -360,7 +360,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         #knowledgeSkillIds = ['kar', 'kdu', 'ken', 'kge', 'khi', 'klo', 'kna', 'kno', 'kpl', 'kre'];
         #_buildSkills() {
-            const skillCategory = CATEGORY_MAP.skills.subcategories.skills;
+            const skillCategory = CATEGORY_MAP.skills.groups.skills;
 
             const actorSkills = this.actorData.isMulti
                 ? pf1.config.skills
@@ -482,7 +482,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 };
             });
 
-            this.addActionsToActionList(actions, CATEGORY_MAP.conditions.subcategories.conditions);
+            this.addActionsToActionList(actions, CATEGORY_MAP.conditions.groups.conditions);
         }
 
         #_buildSpells() {
@@ -490,7 +490,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const spellCategory = CATEGORY_MAP.spells.subcategories.spells;
+            const spellCategory = CATEGORY_MAP.spells.groups.spells;
             const allSpells = this.actorData.items
                 .filter(([_id, item]) => item.type === 'spell' && Utils.canUseItem(item));
 
