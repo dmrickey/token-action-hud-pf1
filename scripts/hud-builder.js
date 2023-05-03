@@ -64,25 +64,27 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 || sub1?.info1?.text !== sub2?.info1?.text;
         }
 
+        // todo no category manager in v1.4 - quick patch for 1.4
         /**
          * This override lets me call with a fully defined parent subcategory without blowing up core logic
          *  @override */
         addSubcategoryToActionList(parentSubcategoryData, subcategoryData) {
             const { type, id } = parentSubcategoryData;
+            super.addSubcategoryToActionList({ type, id }, subcategoryData, true);
 
-            const current = game.tokenActionHud.categoryManager.flattenedSubcategories
-                .find((sub) => sub.id === subcategoryData.id)
-            const infoChanged = !!current && this.#hasInfoChanged(subcategoryData, current);
+            // const current = game.tokenActionHud.categoryManager.flattenedSubcategories
+            //     .find((sub) => sub.id === subcategoryData.id)
+            // const infoChanged = !!current && this.#hasInfoChanged(subcategoryData, current);
 
-            if (!infoChanged) {
-                super.addSubcategoryToActionList({ type, id }, subcategoryData);
-            }
-            else {
-                const current = game.tokenActionHud.categoryManager.flattenedSubcategories
-                    .find((sub) => sub.id === subcategoryData.id) || subcategoryData;
-                current.info1 = subcategoryData.info1;
-                super.addSubcategoryToActionList({ type, id }, current, true);
-            }
+            // if (!infoChanged) {
+            //     super.addSubcategoryToActionList({ type, id }, subcategoryData);
+            // }
+            // else {
+            //     const current = game.tokenActionHud.categoryManager.flattenedSubcategories
+            //         .find((sub) => sub.id === subcategoryData.id) || subcategoryData;
+            //     current.info1 = subcategoryData.info1;
+            //     super.addSubcategoryToActionList({ type, id }, current, true);
+            // }
         }
 
         #_buildChecks() {
