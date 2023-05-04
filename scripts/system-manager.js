@@ -1,5 +1,5 @@
 // System Module Imports
-import { CATEGORIES } from './categories.js'
+import { GROUPS } from './groups.js'
 import { HudBuilder } from './hud-builder.js';
 import { RollHandler as Core } from './roll-handler.js'
 import { Utils } from './utils.js';
@@ -45,7 +45,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         /** @override */
         async doRegisterDefaultFlags() {
-            return CATEGORIES;
+            return GROUPS;
         }
     }
 });

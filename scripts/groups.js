@@ -3,14 +3,14 @@ import { Utils } from "./utils";
 /**
  * Default categories and groups
  */
-export let CATEGORIES = null;
+export let GROUPS = null;
 
-export const CATEGORY_MAP = {
+export const GROUP_MAP = {
     combat: {
         id: 'combat',
         name: 'PF1.Combat',
         groups: {
-            base: { id: 'combat-base', name: 'PF1.Base', advancedCategoryOptions: { showTitle: false } },
+            base: { id: 'combat-base', name: 'PF1.Base', settings: { showTitle: false } },
             attack: { id: 'combat-attack', name: 'PF1.Attacks' },
             weaponAttaack: { id: 'combat-weaponAttack', name: 'PF1.AttackTypeWeaponPlural' },
             naturalAttack: { id: 'combat-naturalAttack', name: 'PF1.AttackTypeNaturalPlural' },
@@ -54,7 +54,7 @@ export const CATEGORY_MAP = {
         id: 'spells',
         name: 'PF1.Spells',
         groups: {
-            spells: { id: 'spells-spells', name: 'PF1.Spells', advancedCategoryOptions: { showTitle: false } },
+            spells: { id: 'spells-spells', name: 'PF1.Spells', settings: { showTitle: false } },
         },
     },
     features: {
@@ -87,28 +87,28 @@ export const CATEGORY_MAP = {
         id: 'skills',
         name: 'PF1.Skills',
         groups: {
-            skills: { id: 'skills-skills', name: 'PF1.Skills', advancedCategoryOptions: { showTitle: false } },
+            skills: { id: 'skills-skills', name: 'PF1.Skills', settings: { showTitle: false } },
         },
     },
     saves: {
         id: 'saves',
         name: 'PF1.SavingThrowPlural',
         groups: {
-            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural', advancedCategoryOptions: { showTitle: false } },
+            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural', settings: { showTitle: false } },
         },
     },
     checks: {
         id: 'checks',
         name: 'PF1.BuffTarAbilityChecks',
         groups: {
-            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks', advancedCategoryOptions: { showTitle: false } },
+            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks', settings: { showTitle: false } },
         },
     },
     conditions: {
         id: 'conditions',
         name: 'PF1.ConditionPlural',
         groups: {
-            conditions: { id: 'conditions-conditions', name: 'PF1.ConditionPlural', advancedCategoryOptions: { showTitle: false } },
+            conditions: { id: 'conditions-conditions', name: 'PF1.ConditionPlural', settings: { showTitle: false } },
         },
     },
     utility: {
@@ -145,8 +145,8 @@ Hooks.on('i18nInit', async () => {
         return groups;
     };
 
-    const layout = Object.keys(CATEGORY_MAP).map((catKey) => {
-        const catMap = CATEGORY_MAP[catKey];
+    const layout = Object.keys(GROUP_MAP).map((catKey) => {
+        const catMap = GROUP_MAP[catKey];
         catMap.nestId = catMap.nestId || catMap.id;
         catMap.name = Utils.localize(catMap.name);
         return {
@@ -155,7 +155,7 @@ Hooks.on('i18nInit', async () => {
         };
     });
 
-    CATEGORIES = {
+    GROUPS = {
         layout,
         groups: allGroups,
     };

@@ -1,5 +1,5 @@
 import { ActionBuilderActorData } from '../models/actor-data.js';
-import { CATEGORY_MAP } from './categories.js';
+import { GROUP_MAP } from './groups.js';
 import { ROLL_TYPE } from './constants.js';
 import { Settings } from './settings.js';
 import { Utils } from "./utils";
@@ -13,9 +13,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         /**
          * Build System Actions
          * @override
-         * @param {array} subcategoryIds
+         * @param {array} groupIds
          */
-        async buildSystemActions(_subcategoryIds) {
+        async buildSystemActions(_groupIds) {
             const { actor, token } = this;
             this.actorData = new ActionBuilderActorData({ actor, token });
 
@@ -50,11 +50,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         ];
 
         /**
-         * This override lets me call with a fully defined subcategory without blowing up core logic
+         * This override lets me call with a fully defined group without blowing up core logic
          *  @override */
-        addActionsToActionList(actions, subcateogry) {
+        addActions(actions, subcateogry) {
             const { name, id } = subcateogry;
-            super.addActionsToActionList(actions, { name, id });
+            super.addActions(actions, { name, id });
         }
 
         // could change this to directly take an info object instead if more than just "info1" is needed later
@@ -66,25 +66,22 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         // todo no category manager in v1.4 - quick patch for 1.4
         /**
-         * This override lets me call with a fully defined parent subcategory without blowing up core logic
+         * This override lets me call with a fully defined parent group without blowing up core logic
          *  @override */
-        addSubcategoryToActionList(parentSubcategoryData, subcategoryData) {
-            const { type, id } = parentSubcategoryData;
-            super.addSubcategoryToActionList({ type, id }, subcategoryData, true);
+        addGroup(groupData, parentGroupData) {
+            const { type, id } = parentGroupData;
 
-            // const current = game.tokenActionHud.categoryManager.flattenedSubcategories
-            //     .find((sub) => sub.id === subcategoryData.id)
-            // const infoChanged = !!current && this.#hasInfoChanged(subcategoryData, current);
+            // todo
+            const current = Object.values(game.tokenActionHud.actionHandler.groups).find((g) => g.id === groupData.id);
+            const infoChanged = !!current && this.#hasInfoChanged(groupData, current);
 
-            // if (!infoChanged) {
-            //     super.addSubcategoryToActionList({ type, id }, subcategoryData);
-            // }
-            // else {
-            //     const current = game.tokenActionHud.categoryManager.flattenedSubcategories
-            //         .find((sub) => sub.id === subcategoryData.id) || subcategoryData;
-            //     current.info1 = subcategoryData.info1;
-            //     super.addSubcategoryToActionList({ type, id }, current, true);
-            // }
+            if (!infoChanged) {
+                super.addGroup(groupData, { type, id });
+            }
+            else {
+                current.info1 = groupData.info1;
+                super.updateGroup(current, { type, id });
+            }
         }
 
         #_buildChecks() {
@@ -96,7 +93,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 encodedValue: this.#_encodeData(ROLL_TYPE.abilityCheck, key),
                 name: pf1.config.abilities[key],
             }));
-            this.addActionsToActionList(actions, CATEGORY_MAP.checks.groups.checks);
+            this.addActions(actions, GROUP_MAP.checks.groups.checks);
         }
 
         #_buildSaves() {
@@ -108,18 +105,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info1: this.#modToInfo(this.actorData.actor.system.attributes.savingThrows[key].total),
                 name: pf1.config.savingThrows[key],
             }));
-            this.addActionsToActionList(actions, CATEGORY_MAP.saves.groups.saves);
+            this.addActions(actions, GROUP_MAP.saves.groups.saves);
         }
 
         #_buildUtils() {
-            const { groups } = CATEGORY_MAP.utility;
+            const { groups } = GROUP_MAP.utility;
 
             const rest = {
                 id: 'rest',
                 name: Utils.localize('PF1.Rest'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.rest),
             }
-            this.addActionsToActionList([rest], groups.rest);
+            this.addActions([rest], groups.rest);
 
             const tokenActions = [];
             if (game.user.isGM) {
@@ -145,7 +142,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     encodedValue: this.#_encodeData(ROLL_TYPE.openTokenConfig),
                 });
             };
-            this.addActionsToActionList(tokenActions, groups.token);
+            this.addActions(tokenActions, groups.token);
 
             const utilActions = [{
                 id: 'toggleTahGrid',
@@ -162,11 +159,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: Utils.localize('actions.openSettings'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.openSettings),
             }];
-            this.addActionsToActionList(utilActions, groups.utility);
+            this.addActions(utilActions, groups.utility);
         }
 
         #_buildCombat() {
-            const { groups } = CATEGORY_MAP.combat;
+            const { groups } = GROUP_MAP.combat;
 
             let meleeMod, rangedMod;
 
@@ -244,7 +241,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 }
             }
 
-            this.addActionsToActionList(basicActions, groups.base);
+            this.addActions(basicActions, groups.base);
 
             if (this.actorData.isMulti) {
                 return;
@@ -277,14 +274,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: item.name,
             });
 
-            const addBuffs = (subType, subcategory) => {
+            const addBuffs = (subType, group) => {
                 const buffs = this.actorData.items
                     .filter(([_id, item]) => item.type === 'buff' && item.subType === subType)
                     .map(mapBuffs);
-                this.addActionsToActionList(buffs, subcategory);
+                this.addActions(buffs, group);
             }
 
-            const { groups } = CATEGORY_MAP.buffs;
+            const { groups } = GROUP_MAP.buffs;
 
             addBuffs('item', groups.item);
             addBuffs('temp', groups.temporary);
@@ -295,7 +292,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const otherBuffs = this.actorData.items
                 .filter(([_id, item]) => item.type === 'buff' && !['item', 'temp', 'perm', 'misc'].includes(item.subType))
                 .map(mapBuffs);
-            this.addActionsToActionList(otherBuffs, groups.other);
+            this.addActions(otherBuffs, groups.other);
         }
 
         #_buildFeatures() {
@@ -303,7 +300,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const { groups } = CATEGORY_MAP.features;
+            const { groups } = GROUP_MAP.features;
 
             const filter = (subType) => (item) => item.type === 'feat' && item.subType === subType;
             this.#_buildFilteredItemActions(filter('classFeat'), groups.classFeat, Settings.showPassiveFeatures);
@@ -328,7 +325,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const { groups } = CATEGORY_MAP.other;
+            const { groups } = GROUP_MAP.other;
 
             const filter = (item) => !this.#_handledItemTypes.includes(item.type);
             this.#_buildFilteredItemActions(filter, groups.other, Settings.showPassiveFeatures);
@@ -339,7 +336,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const { groups } = CATEGORY_MAP.inventory;
+            const { groups } = GROUP_MAP.inventory;
 
             this.#_buildFilteredItemActions((item) => item.type === 'weapon', groups.weapons, Settings.showPassiveInventory);
             this.#_buildFilteredItemActions((item) => item.type === 'equipment', groups.equipment, Settings.showPassiveInventory);
@@ -360,7 +357,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         #knowledgeSkillIds = ['kar', 'kdu', 'ken', 'kge', 'khi', 'klo', 'kna', 'kno', 'kpl', 'kre'];
         #_buildSkills() {
-            const skillCategory = CATEGORY_MAP.skills.groups.skills;
+            const skillGroup = GROUP_MAP.skills.groups.skills;
 
             const actorSkills = this.actorData.isMulti
                 ? pf1.config.skills
@@ -410,13 +407,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                                 },
                                 ...subskillActions,
                             ];
-                            const subcategoryData = {
-                                id: `${skillCategory.id}-${id}`,
+                            const subSkillGroup = {
+                                id: `${skillGroup.id}-${id}`,
                                 name: groupedActions[0].name,
                                 type: 'system-derived',
                             };
-                            this.addSubcategoryToActionList(skillCategory, subcategoryData);
-                            this.addActionsToActionList(groupedActions, subcategoryData);
+                            this.addGroup(subSkillGroup, skillGroup);
+                            this.addActions(groupedActions, subSkillGroup);
                         }
                         else {
                             // if there are no subskills don't categorize it
@@ -440,16 +437,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     info1: this.#modToInfo(actorSkills[id]?.mod),
                     name: knowledgeName(pf1.config.skills[id]),
                 }));
-                const knowledgeSubcategoryData = {
-                    id: `${skillCategory.id}-knowledge`,
+                const knowledgeGroupData = {
+                    id: `${skillGroup.id}-knowledge`,
                     name: Utils.localize('PF1.KnowledgeSkills'),
                     type: 'system-derived',
                 };
-                this.addSubcategoryToActionList(skillCategory, knowledgeSubcategoryData);
-                this.addActionsToActionList(knowledges, knowledgeSubcategoryData);
+                this.addGroup(knowledgeGroupData, skillGroup);
+                this.addActions(knowledges, knowledgeGroupData);
 
                 const sorted = [...actions].sort((a, b) => a.name < b.name ? -1 : 1);
-                this.addActionsToActionList(sorted, skillCategory);
+                this.addActions(sorted, skillGroup);
             }
             else {
                 const getSubskills = (key) => actorSkills[key].subSkills
@@ -465,7 +462,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 }));
                 const sorted = [...actions].sort((a, b) => a.name < b.name ? -1 : 1);
 
-                this.addActionsToActionList(sorted, skillCategory);
+                this.addActions(sorted, skillGroup);
             }
         }
 
@@ -482,7 +479,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 };
             });
 
-            this.addActionsToActionList(actions, CATEGORY_MAP.conditions.groups.conditions);
+            this.addActions(actions, GROUP_MAP.conditions.groups.conditions);
         }
 
         #_buildSpells() {
@@ -490,7 +487,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const spellCategory = CATEGORY_MAP.spells.groups.spells;
+            const spellGroup = GROUP_MAP.spells.groups.spells;
             const allSpells = this.actorData.items
                 .filter(([_id, item]) => item.type === 'spell' && Utils.canUseItem(item));
 
@@ -504,13 +501,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             spellbookKeys.forEach((key) => {
                 const spellbook = spellbooks[key];
-                const spellbookCategory = {
-                    hasDerivedSubcategories: true,
-                    id: `${spellCategory.id}-${key}`,
+                const spellbookGroup = {
+                    id: `${spellGroup.id}-${key}`,
                     name: Utils.localize(spellbook.label) || spellbook.name,
                     type: 'system-derived',
+                    settings: { style: 'tab' },
                 };
-                this.addSubcategoryToActionList(spellCategory, spellbookCategory);
+                this.addGroup(spellbookGroup, spellGroup);
 
                 // todo add roll icons
                 const basicActions = [
@@ -525,7 +522,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         encodedValue: this.#_encodeData(ROLL_TYPE.concentration, 'concentration', { book: key }),
                     },
                 ];
-                this.addActionsToActionList(basicActions, spellbookCategory);
+                this.addActions(basicActions, spellbookGroup);
 
                 let prepFilter;
                 switch (Settings.spellPreparation) {
@@ -544,50 +541,48 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const bookSpells = allSpells.filter(([_id, spell]) => spell.system.spellbook === key && prepFilter(spell));
 
                 levels.forEach((level) => {
-                    const levelCategory = {
-                        hasDerivedSubcategories: true,
-                        id: `${spellbookCategory.id}-${level}`,
+                    const levelGroup = {
+                        id: `${spellbookGroup.id}-${level}`,
                         name: Utils.localize(`PF1.SpellLevel${level}`),
                         type: 'system-derived',
                     };
 
                     const spellLevel = spellbook.spells[`spell${level}`];
                     if (level && spellbook.spontaneous && spellLevel.max) {
-                        levelCategory.info1 = { text: `${spellLevel.value || 0}/${spellLevel.max}` };
+                        levelGroup.info1 = { text: `${spellLevel.value || 0}/${spellLevel.max}` };
                     }
 
-                    this.addSubcategoryToActionList(spellbookCategory, levelCategory);
+                    this.addGroup(levelGroup, spellbookGroup);
 
                     const itemChargeInfo = (spell) => spellbook.spontaneous
                         ? {}
                         : { text: spell.maxCharges === Number.POSITIVE_INFINITY ? '' : `${spell.charges}/${spell.maxCharges}` };
 
                     const levelSpells = bookSpells.filter(([_id, item]) => item.spellLevel === level);
-                    this.#_addItemActionsToCategory(levelSpells, levelCategory, itemChargeInfo, () => ({}));
+                    this.#_addItemActions(levelSpells, levelGroup, itemChargeInfo, () => ({}));
                 });
             });
         }
 
-        #_buildFilteredItemActions(filter, subcategory, includeUnusable = false) {
+        #_buildFilteredItemActions(filter, parentGroup, includeUnusable = false) {
             if (this.actorData.isMulti) {
                 return;
             }
 
             const filtered = this.actorData.items
                 .filter(([_id, item]) => filter(item) && Utils.canUseItem(item));
-            this.#_addItemActionsToCategory(filtered, subcategory);
+            this.#_addItemActions(filtered, parentGroup);
 
             if (includeUnusable) {
                 const unusable = this.actorData.items
                     .filter(([_id, item]) => filter(item) && !Utils.canUseItem(item));
-                const subcategoryData = {
-                    hasDerivedSubcategories: true,
-                    id: `${subcategory.id}-unusable`,
+                const itemGroup = {
+                    id: `${parentGroup.id}-unusable`,
                     name: Utils.localize('PF1.ActivationTypePassive'),
                     type: 'system-derived',
                 };
-                this.addSubcategoryToActionList(subcategory, subcategoryData);
-                this.#_addItemActionsToCategory(unusable, subcategoryData);
+                this.addGroup(itemGroup, parentGroup);
+                this.#_addItemActions(unusable, itemGroup);
             }
         }
 
@@ -604,9 +599,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             ...extraData,
         });
 
-        #_addItemActionsToCategory(
+        #_addItemActions(
             items,
-            parentSubcategoryData,
+            parentGroupData,
             itemChargeInfo = null,
             actionChargeInfo = null,
         ) {
@@ -634,7 +629,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             const mapItemToAction = ([id, item], idType) => ({
-                id: `${idType}-${id}`,
+                id: `${item.id}-${idType}-${id}`,
                 img: item.img,
                 name: item.name,
                 encodedValue: this.#_encodeData(ROLL_TYPE.item, id),
@@ -643,8 +638,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info3: itemChargeInfo(item),
             });
             const mapSubActionToAction = (item, action, idType, { name } = { name: action.name }) => ({
-                id: `${idType}-${action.id}`,
-                img: item.img,
+                id: `${idType}-${item.id}-${action.id}`,
+                img: action.img || item.img,
                 name: name,
                 encodedValue: this.#_encodeData(ROLL_TYPE.item, item.id, { subActionId: action.id }),
                 info1: info1(item),
@@ -655,13 +650,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             switch (Settings.actionLayout) {
                 case 'onlyItems': {
                     const actions = items.map(([id, item]) => mapItemToAction([id, item], 'onlyItems'));
-                    this.addActionsToActionList(actions, parentSubcategoryData);
+                    this.addActions(actions, parentGroupData);
                 } break;
                 case 'onlyActions': {
                     const actions = (items.flatMap(([id, item]) => Utils.getItemActions(item).length > 1
                         ? Utils.getItemActions(item).map((action) => mapSubActionToAction(item, action, 'onlyActions', { name: `${item.name} - ${action.name}` }))
                         : mapItemToAction([id, item], 'onlyActions')));
-                    this.addActionsToActionList(actions, parentSubcategoryData);
+                    this.addActions(actions, parentGroupData);
                 } break;
                 case 'categorized':
                 default: {
@@ -669,19 +664,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         if (Utils.getItemActions(item).length > 1) {
                             const subActions = item.actions.map((action) => mapSubActionToAction(item, action, 'categorized'));
 
-                            const subcategoryData = {
-                                id: `${parentSubcategoryData.id}-${item.id}`,
+                            const groupData = {
+                                id: `${parentGroupData.id}-${item.id}`,
                                 info1: itemChargeInfo(item),
                                 name: item.name,
                                 type: 'system-derived',
                             };
-                            this.addSubcategoryToActionList(parentSubcategoryData, subcategoryData);
-                            this.addActionsToActionList(subActions, subcategoryData);
+                            this.addGroup(groupData, parentGroupData);
+                            this.addActions(subActions, groupData);
                         }
                         else {
                             // has a use script call or a single action
                             const action = mapItemToAction([id, item], 'categorized');
-                            this.addActionsToActionList([action], parentSubcategoryData);
+                            this.addActions([action], parentGroupData);
                         }
                     });
                 } break;
