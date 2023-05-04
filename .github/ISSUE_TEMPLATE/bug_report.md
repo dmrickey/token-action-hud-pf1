@@ -28,4 +28,4 @@ pf1:
 core:
 
 **Additional context**
-The HUD is built off actors (..obviously). Please export any actors you're having issues with and upload it here.
+The HUD is built rom actors (..obviously). Please export any actors you're having issues with and upload them here.
