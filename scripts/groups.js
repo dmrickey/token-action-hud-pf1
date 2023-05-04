@@ -22,16 +22,18 @@ export const GROUP_MAP = {
             other: { id: 'combat-other', name: 'PF1.Other' },
         },
     },
-    buffs: {
-        id: 'buffs',
-        name: 'PF1.Buffs',
+    saves: {
+        id: 'saves',
+        name: 'PF1.SavingThrowPlural',
         groups: {
-            temporary: { id: 'buffs-temporary', name: 'PF1.Temporary' },
-            item: { id: 'buffs-item', name: 'PF1.Item' },
-            permanent: { id: 'buffs-permanent', name: 'PF1.Permanent' },
-            miscellaneous: { id: 'buffs-miscellaneous', name: 'PF1.Misc' },
-
-            other: { id: 'buffs-other', name: 'PF1.Other' },
+            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural', settings: { showTitle: false } },
+        },
+    },
+    checks: {
+        id: 'checks',
+        name: 'PF1.BuffTarAbilityChecks',
+        groups: {
+            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks', settings: { showTitle: false } },
         },
     },
     inventory: {
@@ -48,13 +50,6 @@ export const GROUP_MAP = {
             containers: { id: 'inventory-containers', name: 'PF1.InventoryContainers' },
 
             other: { id: 'inventory-other', name: 'PF1.Other' },
-        },
-    },
-    spells: {
-        id: 'spells',
-        name: 'PF1.Spells',
-        groups: {
-            spells: { id: 'spells-spells', name: 'PF1.Spells', settings: { showTitle: false } },
         },
     },
     features: {
@@ -76,13 +71,6 @@ export const GROUP_MAP = {
             other: { id: 'features-other', name: 'PF1.Other' },
         },
     },
-    other: {
-        id: 'other',
-        name: 'PF1.Other',
-        groups: {
-            other: { id: 'other-other', name: 'PF1.Other' },
-        },
-    },
     skills: {
         id: 'skills',
         name: 'PF1.Skills',
@@ -90,18 +78,23 @@ export const GROUP_MAP = {
             skills: { id: 'skills-skills', name: 'PF1.Skills', settings: { showTitle: false } },
         },
     },
-    saves: {
-        id: 'saves',
-        name: 'PF1.SavingThrowPlural',
+    spells: {
+        id: 'spells',
+        name: 'PF1.Spells',
         groups: {
-            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural', settings: { showTitle: false } },
+            spells: { id: 'spells-spells', name: 'PF1.Spells', settings: { showTitle: false } },
         },
     },
-    checks: {
-        id: 'checks',
-        name: 'PF1.BuffTarAbilityChecks',
+    buffs: {
+        id: 'buffs',
+        name: 'PF1.Buffs',
         groups: {
-            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks', settings: { showTitle: false } },
+            temporary: { id: 'buffs-temporary', name: 'PF1.Temporary' },
+            item: { id: 'buffs-item', name: 'PF1.Item' },
+            permanent: { id: 'buffs-permanent', name: 'PF1.Permanent' },
+            miscellaneous: { id: 'buffs-miscellaneous', name: 'PF1.Misc' },
+
+            other: { id: 'buffs-other', name: 'PF1.Other' },
         },
     },
     conditions: {
@@ -109,6 +102,13 @@ export const GROUP_MAP = {
         name: 'PF1.ConditionPlural',
         groups: {
             conditions: { id: 'conditions-conditions', name: 'PF1.ConditionPlural', settings: { showTitle: false } },
+        },
+    },
+    other: {
+        id: 'other',
+        name: 'PF1.Other',
+        groups: {
+            other: { id: 'other-other', name: 'PF1.Other' },
         },
     },
     utility: {
