@@ -501,13 +501,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             spellbookKeys.forEach((key) => {
                 const spellbook = spellbooks[key];
-                const spellbookGroup = {
-                    id: `${spellGroup.id}-${key}`,
-                    name: Utils.localize(spellbook.label) || spellbook.name,
-                    type: 'system-derived',
-                    settings: { style: 'tab' },
-                };
-                this.addGroup(spellbookGroup, spellGroup);
+                let spellbookGroup = spellGroup;
+                if (spellbookKeys.length > 1) {
+                    spellbookGroup = {
+                        id: `${spellGroup.id}-${key}`,
+                        name: Utils.localize(spellbook.label) || spellbook.name,
+                        type: 'system-derived',
+                        settings: { style: 'tab' },
+                    };
+                    this.addGroup(spellbookGroup, spellGroup);
+                }
 
                 // todo add roll icons
                 const basicActions = [
