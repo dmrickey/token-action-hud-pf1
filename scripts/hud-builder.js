@@ -375,7 +375,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     .filter((id) => !this.#knowledgeSkillIds.includes(id))
                     .map((id) => ({ id, name: pf1.config.skills[id] || actorSkills[id].name }));
                 const actions = skills.map(({ id, name }) => ({
-                    id,
+                    id: `skill_${id}`,
                     cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                     info1: this.#modToInfo(actorSkills[id]?.mod),
