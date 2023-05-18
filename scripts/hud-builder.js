@@ -88,7 +88,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const saves = Object.keys(pf1.config.abilities);
 
             const actions = saves.map((key) => ({
-                id: key,
+                id: `ability-${key}`,
                 info1: this.#modToInfo(this.actorData.actor.system.abilities[key].mod),
                 encodedValue: this.#_encodeData(ROLL_TYPE.abilityCheck, key),
                 name: pf1.config.abilities[key],
@@ -100,7 +100,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const saves = Object.keys(pf1.config.savingThrows);
 
             const actions = saves.map((key) => ({
-                id: key,
+                id: `save-${key}`,
                 encodedValue: this.#_encodeData(ROLL_TYPE.save, key),
                 info1: this.#modToInfo(this.actorData.actor.system.attributes.savingThrows[key].total),
                 name: pf1.config.savingThrows[key],
@@ -112,7 +112,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const { groups } = GROUP_MAP.utility;
 
             const rest = {
-                id: 'rest',
+                id: 'util-rest',
                 name: Utils.localize('PF1.Rest'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.rest),
             }
@@ -123,11 +123,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const isHidden = this.actorData.tokens
                     .every((token) => token.document.hidden);
                 tokenActions.push(isHidden ? {
-                    id: 'makeVisible',
+                    id: 'util-makeVisible',
                     name: Utils.localize('categories.makeVisible'),
                     encodedValue: this.#_encodeData(ROLL_TYPE.makeVisible),
                 } : {
-                    id: 'makeInvisible',
+                    id: 'util-makeInvisible',
                     name: Utils.localize('categories.makeInvisible'),
                     encodedValue: this.#_encodeData(ROLL_TYPE.makeInvisible),
                 });
@@ -137,7 +137,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 && this.actorData.tokens.every((token) => token.isOwner)
             ) {
                 tokenActions.push({
-                    id: 'openTokenConfig',
+                    id: 'util-openTokenConfig',
                     name: Utils.localize('actions.openTokenConfig'),
                     encodedValue: this.#_encodeData(ROLL_TYPE.openTokenConfig),
                 });
@@ -145,17 +145,17 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this.addActions(tokenActions, groups.token);
 
             const utilActions = [{
-                id: 'toggleTahGrid',
+                id: 'util-toggleTahGrid',
                 name: Utils.localize('actions.toggleTahGrid'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.toggleTahGrid),
                 cssClass: Settings.tahGrid ? ' active' : '',
             }, {
-                id: 'toggleSkip',
+                id: 'util-toggleSkip',
                 name: Utils.localize(Settings.pf1SkipActionDialogs ? 'actions.toggleSkipEnabled' : 'actions.toggleSkipDisabled'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.toggleSkip),
                 cssClass: Settings.pf1SkipActionDialogs ? ' active' : '',
             }, {
-                id: 'openSettings',
+                id: 'util-openSettings',
                 name: Utils.localize('actions.openSettings'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.openSettings),
             }];
@@ -185,31 +185,31 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 ? undefined
                 : { text: this.actorData.combatant.initiative };
             const basicActions = [{
-                id: 'showDefenses',
+                id: 'combat-showDefenses',
                 name: Utils.localize('actions.displayDefenses'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.defenses),
             }, {
-                id: 'bab',
+                id: 'combat-bab',
                 encodedValue: this.#_encodeData(ROLL_TYPE.bab),
                 info1: this.#modToInfo(this.actorData.actor.system.attributes.bab.total),
                 name: Utils.localize('PF1.BABAbbr'),
             }, {
-                id: 'cmb',
+                id: 'combat-cmb',
                 encodedValue: this.#_encodeData(ROLL_TYPE.cmb),
                 info1: this.#modToInfo(this.actorData.actor.system.attributes.cmb.total),
                 name: Utils.localize('PF1.CMBAbbr'),
             }, {
-                id: 'melee',
+                id: 'combat-melee',
                 encodedValue: this.#_encodeData(ROLL_TYPE.melee),
                 info1: currentInitiativeInfo || this.#modToInfo(meleeMod),
                 name: Utils.localize('PF1.Melee'),
             }, {
-                id: 'ranged',
+                id: 'combat-ranged',
                 encodedValue: this.#_encodeData(ROLL_TYPE.ranged),
                 info1: currentInitiativeInfo || this.#modToInfo(rangedMod),
                 name: Utils.localize('PF1.Ranged'),
             }, {
-                id: 'initiative',
+                id: 'combat-initiative',
                 name: Utils.localize('PF1.Initiative'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
                 cssClass: needsInitiative ? ' active' : '',
@@ -218,11 +218,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             if (game.user.isGM) {
                 const action = this.actorData.inCombat ? {
-                    id: 'removeFromCombat',
+                    id: 'combat-removeFromCombat',
                     name: Utils.localize('COMBAT.CombatantRemove'),
                     encodedValue: this.#_encodeData(ROLL_TYPE.removeFromCombat),
                 } : {
-                    id: 'addToCombat',
+                    id: 'combat-addToCombat',
                     name: Utils.localize('COMBAT.CombatantCreate'),
                     encodedValue: this.#_encodeData(ROLL_TYPE.addToCombat),
                 };
@@ -234,7 +234,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const combatant = game.combat.combatants.find((combatant) => combatant.actorId === actorId && combatant.tokenId === tokenId);
                 if (game.combat.current.combatantId === combatant.id) {
                     basicActions.push({
-                        id: 'endTurn',
+                        id: 'combat-endTurn',
                         name: game.i18n.translations.COMBAT.TurnEnd,
                         encodedValue: this.#_encodeData(ROLL_TYPE.endTurn),
                     });
@@ -515,12 +515,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 // todo add roll icons
                 const basicActions = [
                     {
-                        id: 'casterLevel',
+                        id: `casterLevel-${key}`,
                         name: Utils.localize('PF1.CasterLevelCheck'),
                         encodedValue: this.#_encodeData(ROLL_TYPE.casterLevel, 'casterLevel', { book: key }),
                     },
                     {
-                        id: 'concentration',
+                        id: `concentration-${key}`,
                         name: Utils.localize('PF1.ConcentrationCheck'),
                         encodedValue: this.#_encodeData(ROLL_TYPE.concentration, 'concentration', { book: key }),
                     },
