@@ -201,12 +201,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }, {
                 id: 'combat-melee',
                 encodedValue: this.#_encodeData(ROLL_TYPE.melee),
-                info1: currentInitiativeInfo || this.#modToInfo(meleeMod),
+                info1: this.#modToInfo(meleeMod),
                 name: Utils.localize('PF1.Melee'),
             }, {
                 id: 'combat-ranged',
                 encodedValue: this.#_encodeData(ROLL_TYPE.ranged),
-                info1: currentInitiativeInfo || this.#modToInfo(rangedMod),
+                info1: this.#modToInfo(rangedMod),
                 name: Utils.localize('PF1.Ranged'),
             }, {
                 id: 'combat-initiative',
