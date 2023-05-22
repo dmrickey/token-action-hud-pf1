@@ -1,0 +1,1 @@
+- replace melee/ranged calculation with creating a melee/ranged attack roll and inspecting the parts to determine the bonus
