@@ -47,8 +47,29 @@ export class ActionBuilderActorData {
     get items() {
         return this.#_items ??=
             this.actor.items
-                ? [...this.actor.items.entries()]
-                    .sort((a, b) => a[1].name < b[1].name ? -1 : 1)
+                ? this.actor.items
+                    .filter((item) => Utils.canUseItem(item))
+                    .sort((a, b) => a.name < b.name ? -1 : 1)
+                : [];
+    }
+
+    #_unusableItems = null;
+    get unusableItems() {
+        return this.#_unusableItems ??=
+            this.actor.items
+                ? this.actor.items
+                    .filter((item) => !Utils.canUseItem(item))
+                    .sort((a, b) => a.name < b.name ? -1 : 1)
+                : [];
+    }
+
+    #_buffs = null;
+    get buffs() {
+        return this.#_buffs ??=
+            this.actor.items
+                ? this.actor.items
+                    .filter((item) => item.type === 'buff')
+                    .sort((a, b) => a.name < b.name ? -1 : 1)
                 : [];
     }
 
