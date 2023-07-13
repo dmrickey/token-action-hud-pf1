@@ -1,8 +1,8 @@
-import { ActionBuilderActorData } from '../models/actor-data.js';
+import { ActionBuilderActorData } from './models/actor-data.js';
 import { GROUP_MAP } from './groups.js';
 import { ROLL_TYPE } from './constants.js';
 import { Settings } from './settings.js';
-import { Utils } from "./utils";
+import { Utils } from "./utils.js";
 
 export let HudBuilder = null
 
@@ -229,16 +229,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 basicActions.push(action);
             }
 
-            if (!this.actorData.isMulti && this.actorData.inCombat) {
-                const { actorId, tokenId } = this.actorData;
-                const combatant = game.combat.combatants.find((combatant) => combatant.actorId === actorId && combatant.tokenId === tokenId);
-                if (game.combat.current.combatantId === combatant.id) {
-                    basicActions.push({
-                        id: 'combat-endTurn',
-                        name: game.i18n.translations.COMBAT.TurnEnd,
-                        encodedValue: this.#_encodeData(ROLL_TYPE.endTurn),
-                    });
-                }
+            if (this.actorData.isCurrentCombatant) {
+                basicActions.push({
+                    id: 'combat-endTurn',
+                    name: Utils.localize('COMBAT.TurnEnd'),
+                    encodedValue: this.#_encodeData(ROLL_TYPE.endTurn),
+                });
             }
 
             this.addActions(basicActions, groups.base);
@@ -266,17 +262,17 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const mapBuffs = ([id, item]) => ({
-                cssClass: 'toggle' + (item.isActive ? ' active' : ''),
-                encodedValue: this.#_encodeData(ROLL_TYPE.buff, id, { enable: !item.isActive }),
-                id,
-                img: item.img,
-                name: item.name,
+            const mapBuffs = (buff) => ({
+                cssClass: 'toggle' + (buff.isActive ? ' active' : ''),
+                encodedValue: this.#_encodeData(ROLL_TYPE.buff, buff.id, { enable: !buff.isActive }),
+                id: buff.id,
+                img: buff.img,
+                name: buff.name,
             });
 
             const addBuffs = (subType, group) => {
-                const buffs = this.actorData.items
-                    .filter(([_id, item]) => item.type === 'buff' && item.subType === subType)
+                const buffs = this.actorData.buffs
+                    .filter((buff) => buff.subType === subType)
                     .map(mapBuffs);
                 this.addActions(buffs, group);
             }
@@ -289,8 +285,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             addBuffs('misc', groups.miscellaneous);
 
             // leftovers that could be from other mods or from a change in pf1
-            const otherBuffs = this.actorData.items
-                .filter(([_id, item]) => item.type === 'buff' && !['item', 'temp', 'perm', 'misc'].includes(item.subType))
+            const otherBuffs = this.actorData.buffs
+                .filter((item) => !['item', 'temp', 'perm', 'misc'].includes(item.subType))
                 .map(mapBuffs);
             this.addActions(otherBuffs, groups.other);
         }
@@ -489,7 +485,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const spellGroup = GROUP_MAP.spells.groups.spells;
             const allSpells = this.actorData.items
-                .filter(([_id, item]) => item.type === 'spell' && Utils.canUseItem(item));
+                .filter((item) => item.type === 'spell');
 
             const spellbookKeys = Object.keys(this.actorData.actor.system.attributes.spells.spellbooks)
                 .map((key) => ({ key, spellbook: this.actorData.actor.system.attributes.spells.spellbooks[key] }))
@@ -541,7 +537,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         break;
                 }
 
-                const bookSpells = allSpells.filter(([_id, spell]) => spell.system.spellbook === key && prepFilter(spell));
+                const bookSpells = allSpells.filter((spell) => spell.system.spellbook === key && prepFilter(spell));
 
                 levels.forEach((level) => {
                     const levelGroup = {
@@ -561,7 +557,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         ? {}
                         : { text: spell.maxCharges === Number.POSITIVE_INFINITY ? '' : `${spell.charges}/${spell.maxCharges}` };
 
-                    const levelSpells = bookSpells.filter(([_id, item]) => item.spellLevel === level);
+                    const levelSpells = bookSpells.filter((item) => item.spellLevel === level);
                     this.#_addItemActions(levelSpells, levelGroup, itemChargeInfo, () => ({}));
                 });
             });
@@ -572,13 +568,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const filtered = this.actorData.items
-                .filter(([_id, item]) => filter(item) && Utils.canUseItem(item));
+            const filtered = this.actorData.items.filter(filter);
             this.#_addItemActions(filtered, parentGroup);
 
             if (includeUnusable) {
-                const unusable = this.actorData.items
-                    .filter(([_id, item]) => filter(item) && !Utils.canUseItem(item));
+                const unusable = this.actorData.unusableItems.filter(filter);
                 const itemGroup = {
                     id: `${parentGroup.id}-unusable`,
                     name: Utils.localize('PF1.ActivationTypePassive'),
@@ -631,11 +625,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return { text: values.join(', '), class: 'charged' };
             }
 
-            const mapItemToAction = ([id, item], idType) => ({
-                id: `${item.id}-${idType}-${id}`,
+            const mapItemToAction = (item, idType) => ({
+                id: `${item.id}-${idType}-${item.id}`,
                 img: item.img,
                 name: item.name,
-                encodedValue: this.#_encodeData(ROLL_TYPE.item, id),
+                encodedValue: this.#_encodeData(ROLL_TYPE.item, item.id),
                 info1: info1(item),
                 info2: info2(item),
                 info3: itemChargeInfo(item),
@@ -652,18 +646,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             switch (Settings.actionLayout) {
                 case 'onlyItems': {
-                    const actions = items.map(([id, item]) => mapItemToAction([id, item], 'onlyItems'));
+                    const actions = items.map((item) => mapItemToAction(item, 'onlyItems'));
                     this.addActions(actions, parentGroupData);
                 } break;
                 case 'onlyActions': {
-                    const actions = (items.flatMap(([id, item]) => Utils.getItemActions(item).length > 1
+                    const actions = (items.flatMap((item) => Utils.getItemActions(item).length > 1
                         ? Utils.getItemActions(item).map((action) => mapSubActionToAction(item, action, 'onlyActions', { name: `${item.name} - ${action.name}` }))
-                        : mapItemToAction([id, item], 'onlyActions')));
+                        : mapItemToAction(item, 'onlyActions')));
                     this.addActions(actions, parentGroupData);
                 } break;
                 case 'categorized':
                 default: {
-                    items.forEach(([id, item]) => {
+                    items.forEach((item) => {
                         if (Utils.getItemActions(item).length > 1) {
                             const subActions = item.actions.map((action) => mapSubActionToAction(item, action, 'categorized'));
 
@@ -678,7 +672,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         }
                         else {
                             // has a use script call or a single action
-                            const action = mapItemToAction([id, item], 'categorized');
+                            const action = mapItemToAction(item, 'categorized');
                             this.addActions([action], parentGroupData);
                         }
                     });

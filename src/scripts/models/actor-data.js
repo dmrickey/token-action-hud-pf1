@@ -1,5 +1,5 @@
-import { ROLL_TYPE } from "../scripts/constants";
-import { Utils } from "../scripts/utils";
+import { ROLL_TYPE } from "../constants";
+import { Utils } from "../utils";
 
 export class ActionBuilderActorData {
     #_knownActorTypes = ['character', 'npc'];
@@ -36,19 +36,42 @@ export class ActionBuilderActorData {
     get combatant() { return this.combatants[0] || {}; }
     get combatants() {
         if (this.#_fallbackActor) {
-            return game.combat?.combatants.filter((combatant) => combatant.actorId === this.#_fallbackActor.id) ?? [];
+            return game.combat?.combatants.filter((combatant) => combatant.actor === this.#_fallbackActor) ?? [];
         }
 
         const combatantants = game.combat?.combatants ?? [];
-        return combatantants.filter((combatant) => this.tokenIds.find((id) => combatant.tokenId === id));
+        return combatantants.filter((combatant) => this.actors.find((actor) => combatant.actor === actor));
     }
+
+    get isCurrentCombatant() { return !this.isMulti && this.inCombat && game.combat?.combatant.id === this.combatant.id; }
 
     #_items = null;
     get items() {
         return this.#_items ??=
             this.actor.items
-                ? [...this.actor.items.entries()]
-                    .sort((a, b) => a[1].name < b[1].name ? -1 : 1)
+                ? this.actor.items
+                    .filter((item) => Utils.canUseItem(item))
+                    .sort((a, b) => a.name < b.name ? -1 : 1)
+                : [];
+    }
+
+    #_unusableItems = null;
+    get unusableItems() {
+        return this.#_unusableItems ??=
+            this.actor.items
+                ? this.actor.items
+                    .filter((item) => !Utils.canUseItem(item))
+                    .sort((a, b) => a.name < b.name ? -1 : 1)
+                : [];
+    }
+
+    #_buffs = null;
+    get buffs() {
+        return this.#_buffs ??=
+            this.actor.items
+                ? this.actor.items
+                    .filter((item) => item.type === 'buff')
+                    .sort((a, b) => a.name < b.name ? -1 : 1)
                 : [];
     }
 

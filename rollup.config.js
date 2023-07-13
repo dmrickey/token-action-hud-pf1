@@ -7,9 +7,9 @@ export default [
     {
         input: {
             include: [
-                'css/*.*',
-                'scripts/*.js',
-                'scripts/**/*.js',
+                'src/css/*.*',
+                'src/scripts/*.js',
+                'src/scripts/**/*.js',
             ],
             exclude: [
                 'dist/*',
@@ -22,8 +22,8 @@ export default [
         plugins: [
             copy({
                 targets: [
-                    { src: 'module.json', dest: 'dist/' },
-                    { src: 'languages/en.json', dest: 'dist/languages/' },
+                    { src: 'src/module.json', dest: 'dist/' },
+                    { src: 'src/languages/en.json', dest: 'dist/languages/' },
                     { src: 'readme.md', dest: 'dist/' },
                 ]
             }),
