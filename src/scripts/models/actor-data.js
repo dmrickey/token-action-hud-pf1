@@ -1,5 +1,5 @@
-import { ROLL_TYPE } from "../scripts/constants";
-import { Utils } from "../scripts/utils";
+import { ROLL_TYPE } from "../constants";
+import { Utils } from "../utils";
 
 export class ActionBuilderActorData {
     #_knownActorTypes = ['character', 'npc'];
@@ -36,12 +36,14 @@ export class ActionBuilderActorData {
     get combatant() { return this.combatants[0] || {}; }
     get combatants() {
         if (this.#_fallbackActor) {
-            return game.combat?.combatants.filter((combatant) => combatant.actorId === this.#_fallbackActor.id) ?? [];
+            return game.combat?.combatants.filter((combatant) => combatant.actor === this.#_fallbackActor) ?? [];
         }
 
         const combatantants = game.combat?.combatants ?? [];
-        return combatantants.filter((combatant) => this.actorIds.find((id) => combatant.actorId === id));
+        return combatantants.filter((combatant) => this.actors.find((actor) => combatant.actor === actor));
     }
+
+    get isCurrentCombatant() { return !this.isMulti && this.inCombat && game.combat?.combatant.id === this.combatant.id; }
 
     #_items = null;
     get items() {

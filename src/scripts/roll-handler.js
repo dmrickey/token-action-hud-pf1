@@ -2,7 +2,7 @@ import { Utils } from './utils.js'
 
 // Core Module Imports
 import { MODULE, ROLL_TYPE } from './constants.js';
-import { RollHandlerActorData } from '../models/actor-data.js';
+import { RollHandlerActorData } from './models/actor-data.js';
 import { Settings } from './settings.js';
 
 export let RollHandler = null
@@ -88,13 +88,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             const combat = game.combat;
-            if (!combat) {
-                return;
-            }
-
-            const { actorId, tokenId } = this.actorData;
-            const combatant = combat.combatants.find((combatant) => combatant.actorId === actorId && combatant.tokenId === tokenId);
-            if (combat.current.combatantId === combatant.id) {
+            if (combat && this.actorData.isCurrentCombatant) {
                 await combat.nextTurn();
             }
         }

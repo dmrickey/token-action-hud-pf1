@@ -1,8 +1,8 @@
-import { ActionBuilderActorData } from '../models/actor-data.js';
+import { ActionBuilderActorData } from './models/actor-data.js';
 import { GROUP_MAP } from './groups.js';
 import { ROLL_TYPE } from './constants.js';
 import { Settings } from './settings.js';
-import { Utils } from "./utils";
+import { Utils } from "./utils.js";
 
 export let HudBuilder = null
 
@@ -229,16 +229,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 basicActions.push(action);
             }
 
-            const { inCombat, isMulti } = this.actorData;
-            if (!isMulti && inCombat) {
-                const { combatant } = this.actorData;
-                if (game.combat.current.combatantId === combatant.id) {
-                    basicActions.push({
-                        id: 'combat-endTurn',
-                        name: game.i18n.translations.COMBAT.TurnEnd,
-                        encodedValue: this.#_encodeData(ROLL_TYPE.endTurn),
-                    });
-                }
+            if (this.actorData.isCurrentCombatant) {
+                basicActions.push({
+                    id: 'combat-endTurn',
+                    name: Utils.localize('COMBAT.TurnEnd'),
+                    encodedValue: this.#_encodeData(ROLL_TYPE.endTurn),
+                });
             }
 
             this.addActions(basicActions, groups.base);
