@@ -229,9 +229,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 basicActions.push(action);
             }
 
-            if (!this.actorData.isMulti && this.actorData.inCombat) {
-                const { actorId, tokenId } = this.actorData;
-                const combatant = game.combat.combatants.find((combatant) => combatant.actorId === actorId && combatant.tokenId === tokenId);
+            const { inCombat, isMulti } = this.actorData;
+            if (!isMulti && this.inCombat) {
+                const { combatant } = this.actorData;
                 if (game.combat.current.combatantId === combatant.id) {
                     basicActions.push({
                         id: 'combat-endTurn',
