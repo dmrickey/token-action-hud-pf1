@@ -40,7 +40,7 @@ export class ActionBuilderActorData {
         }
 
         const combatantants = game.combat?.combatants ?? [];
-        return combatantants.filter((combatant) => this.tokenIds.find((id) => combatant.tokenId === id));
+        return combatantants.filter((combatant) => this.actorIds.find((id) => combatant.actorId === id));
     }
 
     #_items = null;
