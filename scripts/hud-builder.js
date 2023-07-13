@@ -230,7 +230,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             const { inCombat, isMulti } = this.actorData;
-            if (!isMulti && this.inCombat) {
+            if (!isMulti && inCombat) {
                 const { combatant } = this.actorData;
                 if (game.combat.current.combatantId === combatant.id) {
                     basicActions.push({
