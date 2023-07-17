@@ -43,7 +43,7 @@ export class ActionBuilderActorData {
         return combatantants.filter((combatant) => this.actors.find((actor) => combatant.actor === actor));
     }
 
-    get isCurrentCombatant() { return !this.isMulti && this.inCombat && game.combat?.combatant.id === this.combatant.id; }
+    get isCurrentCombatant() { return !this.isMulti && this.inCombat && game.combat?.combatant?.id === this.combatant.id; }
 
     #_items = null;
     get items() {
