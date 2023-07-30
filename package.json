@@ -2,6 +2,7 @@
     "scripts": {
         "build": "rollup -cm",
         "build:dev": "rollup -wcm",
+        "build:watch": "rollup -wcm",
         "dev": "rollup -wcm"
     },
     "devDependencies": {

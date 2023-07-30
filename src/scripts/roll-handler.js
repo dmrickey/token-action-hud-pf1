@@ -50,7 +50,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case ROLL_TYPE.condition: await Promise.all(actors.map((actor) => actor.setCondition(actionId, enable))); break;
                 case ROLL_TYPE.defenses: await Promise.all(actors.map((actor) => actor.rollDefenses({ skipDialog: this.skipActionDialog }))); break;
                 case ROLL_TYPE.endTurn: this.#_endTurn(); break;
-                case ROLL_TYPE.initiative: await Promise.all(actors.map((actor) => actor.rollInitiative({ createCombatants: true, skipDialog: this.skipActionDialog }))); break;
+                case ROLL_TYPE.initiative: await Promise.all(actors.map((actor) => actor.rollInitiative({ createCombatants: true, skipDialog: this.skipActionDialog, rerollInitiative: game.user.isGM }))); break;
                 case ROLL_TYPE.item: await this.#_rollItem(); break;
                 case ROLL_TYPE.makeInvisible: await this.#_makeInvisible(); break;
                 case ROLL_TYPE.makeVisible: await this.#_makeVisible(); break;

@@ -180,10 +180,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 rangedMod = baseBonus + attributes.attack.ranged + rangedAbility;
             }
 
-            const needsInitiative = !this.actorData.isMulti && this.actorData.inCombat && this.actorData.combatant.initiative !== null;
-            const currentInitiativeInfo = this.actorData.isMulti || !this.actorData.inCombat || !needsInitiative
-                ? undefined
-                : { text: this.actorData.combatant.initiative };
             const basicActions = [{
                 id: 'combat-showDefenses',
                 name: Utils.localize('actions.displayDefenses'),
@@ -212,8 +208,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'combat-initiative',
                 name: Utils.localize('PF1.Initiative'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
-                cssClass: needsInitiative ? ' active' : '',
-                info1: currentInitiativeInfo || this.#modToInfo(this.actorData.actor.system.attributes.init.total),
+                cssClass: `${this.actorData.inCombat ? 'active' : ''} ${game.user.isGM ? '' : 'flat-disabled'}`,
+                info1: this.actorData.combatant.initiative === null
+                    ? this.#modToInfo(this.actorData.actor.system.attributes.init.total)
+                    : { text: this.actorData.combatant.initiative },
             }];
 
             if (game.user.isGM) {

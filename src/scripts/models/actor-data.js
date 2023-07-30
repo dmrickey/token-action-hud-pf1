@@ -30,7 +30,7 @@ export class ActionBuilderActorData {
     }
 
     get inCombat() {
-        return this.combatants.length === this.actors.length;
+        return !!this.combatants.length;
     }
 
     get combatant() { return this.combatants[0] || {}; }

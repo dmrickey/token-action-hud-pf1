@@ -14,6 +14,10 @@
         }
     }
 
+    .flat-disabled {
+        pointer-events: none;
+    }
+
     .action-nulled-out .roll-modifier,
     .action-nulled-out .tah-action-button-text {
         opacity: .6;
