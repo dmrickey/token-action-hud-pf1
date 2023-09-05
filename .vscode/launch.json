@@ -7,9 +7,15 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "Debug Chrome",
             "url": "http://localhost:30000",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}",
+            // "sourceMapPathOverrides": {
+            //     "*": "${webRoot}/*"
+            // }
+            "sourceMapPathOverrides": {
+                "http://localhost:30000/modules/token-action-hud-pf1/*": "${webRoot}/dist/*"
+            }
         }
     ]
 }

@@ -10,7 +10,7 @@ export class ActionBuilderActorData {
     #_fallbackToken = null;
     get token() { return this.#_fallbackToken || this.tokens[0] || {}; }
 
-    get actors() { return this.#_fallbackActor ? [this.#_fallbackActor] : this.tokens.map(token => token.actor); }
+    get actors() { return this.#_fallbackActor ? [this.#_fallbackActor] : this.tokens.map(token => token.actor).filter(x => !!x); }
     get tokens() { return this.#_fallbackToken ? [this.#_fallbackToken] : canvas.tokens.controlled; }
 
     get actorId() { return this.actor?.id; }
@@ -21,7 +21,7 @@ export class ActionBuilderActorData {
     get tokenIds() { return this.tokens?.map(x => x.id) ?? []; }
 
     get isValid() {
-        const filter = (actor) => this.#_knownActorTypes.includes(actor.type);
+        const filter = (actor) => this.#_knownActorTypes.includes(actor?.type);
         const isValid = this.actors?.some(filter) ?? false;
         if (!this.actors.every(filter)) {
             console.warn('TAH detected invalid selected actor');
