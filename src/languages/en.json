@@ -39,6 +39,10 @@
                 "name": "Show Passive Inventory",
                 "hint": "When disabled (default), only items that can be used will be shown. When enabled, every item in the actor's inventory will show."
             },
+            "simplifySkillNames": {
+                "name": "Simplify Skill Names",
+                "hint": "Useful for custom skills (mostly knowledge, craft, profession, and perform skills) to only show the name in Parenthesis. e.g. `Knowledge (Absalom)` will show just the name `Absalom`."
+            },
             "spellPreparation": {
                 "name": "Spell Visibility",
                 "hint": "Determines which spells are visible - \"Only Remaining\" will show only your spells left that can still cast. \"All Prepared\" will show all spells that are prepared/known, even if you've already cast all available. \"All Spells\" will show you every spell in your spell book, even if they're not prepared and cannot be cast.",

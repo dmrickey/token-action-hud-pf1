@@ -363,6 +363,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const skillIds = Object.keys(actorSkills).filter((id) => !excludedSkills.includes(id));
 
+            const getParentheticalName = (original) => /\(([^)]+)\)/g.exec(original)?.[1] || original;
+
+            const nameFilter = (name) => Settings.simplifySkillNames
+                ? getParentheticalName(name)
+                : name;
+
             if (Settings.categorizeSkills) {
                 const skills = skillIds
                     .filter((id) => this.actorData.isMulti || Utils.isEmptyObject(actorSkills[id].subSkills || {}))
@@ -373,7 +379,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                     info1: this.#modToInfo(actorSkills[id]?.mod),
-                    name: name,
+                    name: nameFilter(name),
                 }));
 
                 if (this.actorData.isSingle) {
@@ -386,7 +392,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                                 cssClass: currentSubskills[sid].rt && !currentSubskills[sid].rank ? 'action-nulled-out' : '',
                                 encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
                                 info1: this.#modToInfo(currentSubskills[sid].mod),
-                                name: currentSubskills[sid].name,
+                                name: nameFilter(currentSubskills[sid].name),
                             }))
                             : [];
 
@@ -397,7 +403,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                                     cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                                     info1: this.#modToInfo(actorSkills[id].mod),
-                                    name: pf1.config.skills[id] || actorSkills[id].name,
+                                    name: nameFilter(pf1.config.skills[id] || actorSkills[id].name),
                                 },
                                 ...subskillActions,
                             ];
@@ -417,19 +423,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                                 cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                                 encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                                 info1: this.#modToInfo(actorSkills[id].mod),
-                                name: pf1.config.skills[id] || actorSkills[id].name,
+                                name: nameFilter(pf1.config.skills[id] || actorSkills[id].name),
                             });
                         }
                     });
                 }
 
-                const knowledgeName = (original) => /\(([^)]+)\)/g.exec(original)[1] || original;
                 const knowledges = this.#knowledgeSkillIds.map((id) => ({
                     id: `categorized-${id}`,
                     cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                     info1: this.#modToInfo(actorSkills[id]?.mod),
-                    name: knowledgeName(pf1.config.skills[id]),
+                    name: nameFilter(getParentheticalName(pf1.config.skills[id])),
                 }));
                 const knowledgeGroupData = {
                     id: `${skillGroup.id}-knowledge`,
@@ -452,7 +457,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
                     encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
                     info1: this.#modToInfo(actorSkills[id]?.mod),
-                    name: name,
+                    name: nameFilter(name),
                 }));
                 const sorted = [...actions].sort((a, b) => a.name < b.name ? -1 : 1);
 

@@ -12,6 +12,7 @@ const keys = {
     showModifiers: 'showModifiers',
     showPassiveFeatures: 'showPassiveFeatures',
     showPassiveInventory: 'showPassiveInventory',
+    simplifySkillNames: 'simplifySkillNames',
     spellPreparation: 'spellPreparation',
 };
 
@@ -48,6 +49,10 @@ export function register(updateFunc) {
         },
         [keys.showPassiveInventory]: {
             default: false,
+            type: Boolean,
+        },
+        [keys.simplifySkillNames]: {
+            default: true,
             type: Boolean,
         },
         [keys.spellPreparation]: {
@@ -91,6 +96,20 @@ export class Settings {
 
     static set migrationVersion(version) {
         Settings.#setSetting(keys.migrationVersion, version);
+    }
+
+    /**
+     * @returns {boolean} Simplifies skill names to only the name in parenthesis
+     */
+    static get simplifySkillNames() {
+        return Settings.#getSetting(keys.simplifySkillNames);
+    }
+
+    /**
+     * @returns {boolean} Simplifies skill names to only the name in parenthesis
+     */
+    static set simplifySkillNames(value) {
+        return Settings.#setSetting(keys.simplifySkillNames, value);
     }
 
     /**
