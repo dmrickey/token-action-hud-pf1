@@ -8,6 +8,7 @@ import { Utils } from './utils.js';
 const keys = {
     actionLayout: 'actionLayout',
     categorizeSkills: 'categorizeSkills',
+    hideUntrainedSkills: 'hideUntrainedSkills',
     migrationVersion: 'migrationVersion',
     showModifiers: 'showModifiers',
     showPassiveFeatures: 'showPassiveFeatures',
@@ -41,6 +42,10 @@ export function register(updateFunc) {
         },
         [keys.categorizeSkills]: {
             default: true,
+            type: Boolean,
+        },
+        [keys.hideUntrainedSkills]: {
+            default: false,
             type: Boolean,
         },
         [keys.showPassiveFeatures]: {
@@ -88,6 +93,10 @@ export class Settings {
 
     static get categorizeSkills() {
         return Settings.#getSetting(keys.categorizeSkills);
+    }
+
+    static get hideUntrainedSkills() {
+        return Settings.#getSetting(keys.hideUntrainedSkills);
     }
 
     static get migrationVersion() {

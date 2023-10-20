@@ -374,39 +374,46 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     .filter((id) => this.actorData.isMulti || Utils.isEmptyObject(actorSkills[id].subSkills || {}))
                     .filter((id) => !this.#knowledgeSkillIds.includes(id))
                     .map((id) => ({ id, name: pf1.config.skills[id] || actorSkills[id].name }));
-                const actions = skills.map(({ id, name }) => ({
-                    id: `skill_${id}`,
-                    cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
-                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                    info1: this.#modToInfo(actorSkills[id]?.mod),
-                    name: nameFilter(name),
-                }));
+                const actions = skills
+                    .filter(({ id }) => !Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank)
+                    .map(({ id, name }) => ({
+                        id: `skill_${id}`,
+                        cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
+                        encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                        info1: this.#modToInfo(actorSkills[id]?.mod),
+                        name: nameFilter(name),
+                    }));
 
                 if (this.actorData.isSingle) {
                     const subSkillIds = Object.keys(actorSkills).filter((id) => !Utils.isEmptyObject(actorSkills[id].subSkills || {}));
                     subSkillIds.forEach((id) => {
                         const currentSubskills = actorSkills[id].subSkills;
                         const subskillActions = currentSubskills
-                            ? Object.keys(currentSubskills).map((sid) => ({
-                                id: `categorized-${id}.subSkills.${sid}`,
-                                cssClass: currentSubskills[sid].rt && !currentSubskills[sid].rank ? 'action-nulled-out' : '',
-                                encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
-                                info1: this.#modToInfo(currentSubskills[sid].mod),
-                                name: nameFilter(currentSubskills[sid].name),
-                            }))
+                            ? Object.keys(currentSubskills)
+                                .filter((sid) => !Settings.hideUntrainedSkills || !currentSubskills[sid].rt || !!currentSubskills[sid].rank)
+                                .map((sid) => ({
+                                    id: `categorized-${id}.subSkills.${sid}`,
+                                    cssClass: currentSubskills[sid].rt && !currentSubskills[sid].rank ? 'action-nulled-out' : '',
+                                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, `${id}.subSkills.${sid}`),
+                                    info1: this.#modToInfo(currentSubskills[sid].mod),
+                                    name: nameFilter(currentSubskills[sid].name),
+                                }))
                             : [];
 
                         if (subskillActions.length) {
-                            const groupedActions = [
-                                {
-                                    id: `categorized-${id}`,
-                                    cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
-                                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                                    info1: this.#modToInfo(actorSkills[id].mod),
-                                    name: nameFilter(pf1.config.skills[id] || actorSkills[id].name),
-                                },
-                                ...subskillActions,
-                            ];
+                            const groupedActions =
+                                !Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank
+                                    ? [
+                                        {
+                                            id: `categorized-${id}`,
+                                            cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
+                                            encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                                            info1: this.#modToInfo(actorSkills[id].mod),
+                                            name: nameFilter(pf1.config.skills[id] || actorSkills[id].name),
+                                        },
+                                        ...subskillActions,
+                                    ]
+                                    : subskillActions;
                             const subSkillGroup = {
                                 id: `${skillGroup.id}-${id}`,
                                 name: groupedActions[0].name,
@@ -418,24 +425,28 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         else {
                             // if there are no subskills don't categorize it
                             // (e.g. if the actor doesn't have any specific "perform" skills, then just put the single generic "perform" skill alongside the rest of the non-categorized skills)
-                            actions.push({
-                                id,
-                                cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
-                                encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                                info1: this.#modToInfo(actorSkills[id].mod),
-                                name: nameFilter(pf1.config.skills[id] || actorSkills[id].name),
-                            });
+                            if (!Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank) {
+                                actions.push({
+                                    id,
+                                    cssClass: actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
+                                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                                    info1: this.#modToInfo(actorSkills[id].mod),
+                                    name: nameFilter(pf1.config.skills[id] || actorSkills[id].name),
+                                });
+                            }
                         }
                     });
                 }
 
-                const knowledges = this.#knowledgeSkillIds.map((id) => ({
-                    id: `categorized-${id}`,
-                    cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
-                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                    info1: this.#modToInfo(actorSkills[id]?.mod),
-                    name: nameFilter(getParentheticalName(pf1.config.skills[id])),
-                }));
+                const knowledges = this.#knowledgeSkillIds
+                    .filter((id) => !Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank)
+                    .map((id) => ({
+                        id: `categorized-${id}`,
+                        cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
+                        encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                        info1: this.#modToInfo(actorSkills[id]?.mod),
+                        name: nameFilter(getParentheticalName(pf1.config.skills[id])),
+                    }));
                 const knowledgeGroupData = {
                     id: `${skillGroup.id}-knowledge`,
                     name: Utils.localize('PF1.KnowledgeSkills'),
@@ -452,13 +463,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     ? Object.keys(actorSkills[key].subSkills).map((s) => ({ id: `${key}.subSkills.${s}`, name: actorSkills[key].subSkills[s].name }))
                     : [];
                 const skills = [...skillIds.map((id) => ({ id, name: pf1.config.skills[id] || actorSkills[id].name })), ...skillIds.flatMap(getSubskills)];
-                const actions = skills.map(({ id, name }) => ({
-                    id,
-                    cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
-                    encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
-                    info1: this.#modToInfo(actorSkills[id]?.mod),
-                    name: nameFilter(name),
-                }));
+                const actions = skills
+                    .filter(({ id }) => !Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank)
+                    .map(({ id, name }) => ({
+                        id,
+                        cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
+                        encodedValue: this.#_encodeData(ROLL_TYPE.skill, id),
+                        info1: this.#modToInfo(actorSkills[id]?.mod),
+                        name: nameFilter(name),
+                    }));
                 const sorted = [...actions].sort((a, b) => a.name < b.name ? -1 : 1);
 
                 this.addActions(sorted, skillGroup);
