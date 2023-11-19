@@ -9,13 +9,14 @@ export let SystemManager = null
 
 Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
     SystemManager = class SystemManager extends coreModule.api.SystemManager {
+        // todo - what is this doing?
         /** @override */
         doGetCategoryManager(_user) {
             return new coreModule.api.CategoryManager();
         }
 
         /** @override */
-        doGetActionHandler(categoryManager) {
+        getActionHandler(categoryManager) {
             const actionHandler = new HudBuilder(categoryManager);
             return actionHandler;
         }
@@ -30,7 +31,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         /** @override */
-        doGetRollHandler(handlerId) {
+        getRollHandler(handlerId) {
             switch (handlerId) {
                 case 'core':
                 default:
@@ -39,12 +40,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         /** @override */
-        doRegisterSettings(updateFunc) {
+        registerSettings(updateFunc) {
             systemSettings.register(updateFunc);
         }
 
         /** @override */
-        async doRegisterDefaultFlags() {
+        async registerDefaults() {
             return GROUPS;
         }
     }

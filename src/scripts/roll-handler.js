@@ -33,7 +33,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @param {object} event
          * @param {string} encodedValue
          */
-        async doHandleActionEvent(event, encodedValue) {
+        async handleActionClick(event, encodedValue) {
             const action = JSON.parse(encodedValue);
             this.actorData = new RollHandlerActorData(action);
 
