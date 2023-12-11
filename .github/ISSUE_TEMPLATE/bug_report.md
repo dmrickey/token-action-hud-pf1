@@ -23,9 +23,10 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**What version of TAH pf1/core are you using?**
-pf1:
-core:
+**What versions are you using?**
+TAH-pf1:
+TAH-core:
+pf1 (system):
 
 **Additional context**
 The HUD is built from actors (..obviously). Please export any actors you're having specific issues with and upload them here. To export an actor, go to your actors tab and right click on the actor. Upload the json file here.
