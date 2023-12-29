@@ -549,7 +549,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         break;
                     case 'onlyRemaining':
                     default:
-                        prepFilter = (spell) => !!spell.charges;
+                        prepFilter = (spell) => (spell.charges || 0) - (spell.slotCost || 0) >= 0;
+                        // todo v10
+                        //prepFilter = (spell) => !!spell.canUse;
                         break;
                 }
 
