@@ -1,3 +1,4 @@
+import { MODULE } from "./constants";
 import { Utils } from "./utils";
 
 /**
@@ -89,6 +90,7 @@ export const GROUP_MAP = {
         id: 'buffs',
         name: 'PF1.Buffs',
         groups: {
+            actions: { id: 'buffs-actions', name: `${MODULE.ID}.categories.activeBuffActions` },
             temporary: { id: 'buffs-temporary', name: 'PF1.Temporary' },
             item: { id: 'buffs-item', name: 'PF1.Item' },
             permanent: { id: 'buffs-permanent', name: 'PF1.Permanent' },

@@ -9,6 +9,7 @@
             "toggleTahGrid": "Toggle Grid"
         },
         "categories": {
+            "activeBuffActions": "Active Buff Actions",
             "makeInvisible": "Make Invisible",
             "makeVisible": "Make Visible",
             "utility": "Utility"

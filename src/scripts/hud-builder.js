@@ -260,7 +260,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            const mapBuffs = (buff) => ({
+            const mapBuff = (buff) => ({
                 cssClass: 'toggle' + (buff.isActive ? ' active' : ''),
                 encodedValue: this.#_encodeData(ROLL_TYPE.buff, buff.id, { enable: !buff.isActive }),
                 id: buff.id,
@@ -271,9 +271,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const addBuffs = (subType, group) => {
                 const buffs = this.actorData.buffs
                     .filter((buff) => buff.subType === subType)
-                    .map(mapBuffs);
+                    .map(mapBuff);
                 this.addActions(buffs, group);
-            }
+            };
 
             const { groups } = GROUP_MAP.buffs;
 
@@ -282,10 +282,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             addBuffs('perm', groups.permanent);
             addBuffs('misc', groups.miscellaneous);
 
+            const withActions = this.actorData.buffs
+                .filter((buff) => buff.isActive && Utils.getItemActions(buff).length > 0);
+            this.#_addItemActions(withActions, groups.actions, { actionLayout: 'onlyActions' });
+
             // leftovers that could be from other mods or from a change in pf1
             const otherBuffs = this.actorData.buffs
                 .filter((item) => !['item', 'temp', 'perm', 'misc'].includes(item.subType))
-                .map(mapBuffs);
+                .map(mapBuff);
             this.addActions(otherBuffs, groups.other);
         }
 
@@ -576,7 +580,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         : { text: spell.maxCharges === Number.POSITIVE_INFINITY ? '' : `${spell.charges}/${spell.maxCharges}` };
 
                     const levelSpells = bookSpells.filter((item) => item.spellLevel === level);
-                    this.#_addItemActions(levelSpells, levelGroup, itemChargeInfo, () => ({}));
+                    this.#_addItemActions(levelSpells, levelGroup, { itemChargeInfo, actionChargeInfo: () => ({}) });
                 });
             });
         }
@@ -616,10 +620,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         #_addItemActions(
             items,
-            parentGroupData,
-            itemChargeInfo = null,
-            actionChargeInfo = null,
-        ) {
+            parentGroupData, {
+                itemChargeInfo = null,
+                actionChargeInfo = null,
+                actionLayout = Settings.actionLayout,
+            } = {}) {
             if (this.actorData.isMulti) {
                 return;
             }
@@ -662,7 +667,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info3: actionChargeInfo(action),
             });
 
-            switch (Settings.actionLayout) {
+            switch (actionLayout) {
                 case 'onlyItems': {
                     const actions = items.map((item) => mapItemToAction(item, 'onlyItems'));
                     this.addActions(actions, parentGroupData);
