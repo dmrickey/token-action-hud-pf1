@@ -579,7 +579,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         ? {}
                         : { text: spell.maxCharges === Number.POSITIVE_INFINITY ? '' : `${spell.charges}/${spell.maxCharges}` };
 
-                    const levelSpells = bookSpells.filter((item) => item.data.system.level === level);
+                    const levelSpells = bookSpells.filter((item) => item.system.level === level);
                     this.#_addItemActions(levelSpells, levelGroup, { itemChargeInfo, actionChargeInfo: () => ({}) });
                 });
             });
