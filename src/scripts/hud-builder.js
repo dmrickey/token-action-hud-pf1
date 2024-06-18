@@ -359,7 +359,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const actorSkills = this.actorData.isMulti
                 ? pf1.config.skills
-                : this.actorData.actor.system.skills
+                : this.actorData.actor.system.skills;
 
             const excludedSkills = game.settings.get('pf1', 'allowBackgroundSkills')
                 ? []
@@ -632,7 +632,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const info1 = (_item) => ({});
             const info2 = (_item) => ({});
 
-            itemChargeInfo ??= (item) => item.maxCharges
+            itemChargeInfo ??= (item) => item.maxCharges && item.maxCharges !== Number.POSITIVE_INFINITY
                 ? { text: `${item.charges}/${item.maxCharges}`, class: 'charged' }
                 : {};
             actionChargeInfo ??= (action) => {
