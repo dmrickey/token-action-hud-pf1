@@ -483,15 +483,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         #_buildConditions() {
-            const conditions = Object.keys(pf1.config.conditions);
-            const actions = conditions.map((key) => {
-                const isEnabled = this.actorData.actors.every((actor) => actor.hasCondition(key));
+            const actions = pf1.registry.conditions.contents.map(({ id, name, texture }) => {
+                const isEnabled = this.actorData.actors.every((actor) => actor.hasCondition(id));
                 return {
                     cssClass: 'toggle' + (isEnabled ? ' active' : ''),
-                    encodedValue: this.#_encodeData(ROLL_TYPE.condition, key, { enable: !isEnabled }),
-                    id: key,
-                    img: pf1.config.conditionTextures[key],
-                    name: pf1.config.conditions[key],
+                    encodedValue: this.#_encodeData(ROLL_TYPE.condition, id, { enable: !isEnabled }),
+                    id,
+                    img: texture,
+                    name,
                 };
             });
 
