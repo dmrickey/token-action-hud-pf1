@@ -5,12 +5,10 @@
         font-size: .65rem;
 
         &:before {
-            content: '';
-            width: .7rem;
-            height: .7rem;
-            background: url(../../systems/pf1/icons/actions/battery-pack.svg);
-            display: block;
+            content: '';
+            font-family: 'RPGAwesome';
             margin: .2rem;
+            scale: 1.25;
         }
     }
 
