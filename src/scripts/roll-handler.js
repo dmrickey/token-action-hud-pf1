@@ -48,7 +48,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case ROLL_TYPE.cmb: await Promise.all(actors.map((actor) => actor.rollCMB({ skipDialog: this.skipActionDialog }))); break;
                 case ROLL_TYPE.concentration: this.actorData.isMulti ? this.#logInvalidMulti() : await actor.rollConcentration(book, { skipDialog: this.skipActionDialog }); break;
                 case ROLL_TYPE.condition: await Promise.all(actors.map((actor) => actor.setCondition(actionId, enable))); break;
-                case ROLL_TYPE.defenses: await Promise.all(actors.map((actor) => actor.rollDefenses({ skipDialog: this.skipActionDialog }))); break;
+                case ROLL_TYPE.defenses: await Promise.all(tokens.map((token) => token.actor.displayDefenseCard({ token }))); break;
                 case ROLL_TYPE.endTurn: this.#_endTurn(); break;
                 case ROLL_TYPE.initiative: await Promise.all(actors.map((actor) => actor.rollInitiative({ createCombatants: true, skipDialog: this.skipActionDialog, rerollInitiative: game.user.isGM }))); break;
                 case ROLL_TYPE.item: await this.#_rollItem(); break;
