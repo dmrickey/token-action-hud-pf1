@@ -439,6 +439,23 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
                 this.addActions(sorted, skillGroup);
             }
+
+            // add skill utilities
+            {
+                const utils = [];
+                const areHidden = Settings.hideUntrainedSkills;
+                utils.push(areHidden ? {
+                    id: 'util-makeVisible',
+                    name: Utils.localize('actions.toggleUntrainedSkillsDisabled'),
+                    encodedValue: this.#_encodeData(ROLL_TYPE.toggleUntrainedSkills),
+                } : {
+                    id: 'util-makeInvisible',
+                    name: Utils.localize('actions.toggleUntrainedSkillsEnabled'),
+                    encodedValue: this.#_encodeData(ROLL_TYPE.toggleUntrainedSkills),
+                });
+
+                this.addActions(utils, GROUP_MAP.skills.groups.utils);
+            }
         }
 
         #_buildConditions() {

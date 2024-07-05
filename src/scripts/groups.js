@@ -124,6 +124,7 @@ export const GROUP_MAP = {
         name: 'PF1.Skills',
         groups: {
             skills: { id: 'skills-skills', name: 'PF1.Skills', settings: { showTitle: false } },
+            utils: { id: 'skills-utils', name: 'categories.utility' }
         },
     },
     spells: {

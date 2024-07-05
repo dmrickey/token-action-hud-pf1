@@ -64,6 +64,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case ROLL_TYPE.skill: await Promise.all(actors.map((actor) => actor.rollSkill(actionId, { skipDialog: this.skipActionDialog }))); break;
                 case ROLL_TYPE.toggleSkip: await this.#_toggleSkipDialog(); break;
                 case ROLL_TYPE.toggleTahGrid: await this.#_toggleTahGrid(); break;
+                case ROLL_TYPE.toggleUntrainedSkills: await this.#_toggleUntrainedSkills(); break;
                 default: this.#logInvalidAction(); break;
             }
         }
@@ -188,6 +189,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async #_toggleTahGrid() {
             await Settings.toggleTahGrid();
+            Hooks.callAll('forceUpdateTokenActionHud');
+        }
+
+        async #_toggleUntrainedSkills() {
+            await Settings.toggleUntrainedSkills();
             Hooks.callAll('forceUpdateTokenActionHud');
         }
     }

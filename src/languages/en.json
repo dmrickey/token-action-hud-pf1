@@ -5,6 +5,8 @@
             "displayDefenses": "Display Defenses",
             "openSettings": "Open Settings",
             "openTokenConfig": "Open Token Config",
+            "toggleUntrainedSkillsDisabled": "Show Untrained Skills",
+            "toggleUntrainedSkillsEnabled": "Hide Untrained Skills",
             "toggleSkipDisabled": "Skip Dialogs is Disabled",
             "toggleSkipEnabled": "Skip Dialogs is Enabled",
             "toggleTahGrid": "Toggle Grid"

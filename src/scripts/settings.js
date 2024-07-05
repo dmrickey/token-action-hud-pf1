@@ -158,6 +158,11 @@ export class Settings {
         await Settings.#setSetting('grid', !current, 'token-action-hud-core');
     }
 
+    static async toggleUntrainedSkills() {
+        const current = Settings.hideUntrainedSkills;
+        await Settings.#setSetting(keys.hideUntrainedSkills, !current);
+    }
+
     static #getSetting(key, moduleId = MODULE.ID) {
         return game.settings.get(moduleId, key);
     }

@@ -42,4 +42,5 @@ export const ROLL_TYPE = {
     skill: 'skill',
     toggleSkip: 'toggleSkip',
     toggleTahGrid: 'toggleTahGrid',
+    toggleUntrainedSkills: 'toggleUntrainedSkills',
 };
