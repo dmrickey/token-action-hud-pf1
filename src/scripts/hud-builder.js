@@ -522,7 +522,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 levels.forEach((level) => {
                     const levelGroup = {
                         id: `${spellbookGroup.id}-${level}`,
-                        name: Utils.localize(`PF1.SpellLevel${level}`),
+                        name: Utils.localize(`PF1.SpellLevels.${level}`),
                         type: 'system-derived',
                     };
 
