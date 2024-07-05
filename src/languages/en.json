@@ -1,5 +1,6 @@
 {
     "token-action-hud-pf1": {
+        "knowledge-skills": "Knowledge Skills",
         "actions": {
             "displayDefenses": "Display Defenses",
             "openSettings": "Open Settings",

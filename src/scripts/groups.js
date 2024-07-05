@@ -6,21 +6,47 @@ import { Utils } from "./utils";
  */
 export let GROUPS = null;
 
+const gearSubtypes = ['gear', 'adventuring', 'tool', 'reagent', 'remedy', 'herb', 'animal', 'animalGear'];
+const miscSubtypes = ['misc', 'food', 'entertainment', 'vehicle'];
+const tradeSubtypes = ['tradeGoods', 'treasure'];
+const handledItemTypes = [
+    'attack',
+    'buff',
+    'consumable',
+    'container',
+    'equipment',
+    'feat',
+    'implant',
+    'loot',
+    'spell',
+    'weapon',
+];
+
 export const GROUP_MAP = {
     combat: {
         id: 'combat',
         name: 'PF1.Combat',
         groups: {
+            // misc actions not defined by Items (e.g. initiative, cmb, etc)
             base: { id: 'combat-base', name: 'PF1.Base', settings: { showTitle: false } },
-            attack: { id: 'combat-attack', name: 'PF1.Attacks' },
-            weaponAttaack: { id: 'combat-weaponAttack', name: 'PF1.AttackTypeWeaponPlural' },
-            naturalAttack: { id: 'combat-naturalAttack', name: 'PF1.AttackTypeNaturalPlural' },
-            classAbilities: { id: 'combat-classAbilities', name: 'PF1.AttackTypeAbilityPlural' },
-            racialAbilities: { id: 'combat-racialAbilities', name: 'Racial Abilities' },
-            items: { id: 'combat-items', name: 'PF1.Items' },
-            miscellaneous: { id: 'combat-miscellaneous', name: 'PF1.SourceInfoMiscFeatures' },
 
-            other: { id: 'combat-other', name: 'PF1.Other' },
+            weaponAttaack: { id: 'combat-weaponAttack', name: 'PF1.Subtypes.Item.attack.weapon.Plural', filter: (item) => item.type === 'attack' && item.subType === 'weapon' },
+            naturalAttack: { id: 'combat-naturalAttack', name: 'PF1.Subtypes.Item.attack.natural.Plural', filter: (item) => item.type === 'attack' && item.subType === 'natural' },
+            classAbilities: { id: 'combat-classAbilities', name: 'PF1.Subtypes.Item.attack.ability.Plural', filter: (item) => item.type === 'attack' && item.subType === 'ability' },
+            racialAbilities: { id: 'combat-racialAbilities', name: 'PF1.Subtypes.Item.attack.racial.Plural', filter: (item) => item.type === 'attack' && item.subType === 'racialAbility' },
+            items: { id: 'combat-items', name: 'PF1.Subtypes.Item.attack.item.Plural', filter: (item) => item.type === 'attack' && item.subType === 'item' },
+            miscellaneous: { id: 'combat-miscellaneous', name: 'PF1.Subtypes.Item.attack.misc.Plural', filter: (item) => item.type === 'attack' && item.subType === 'misc' },
+
+            other: {
+                id: 'combat-other',
+                name: 'PF1.Other',
+                filter: (item) => {
+                    Object.entries(GROUP_MAP.combat.groups)
+                        .filter(([key, _]) => key !== 'other' && key !== 'base')
+                        .map(([_, value]) => value.filter)
+                        .every((filter) => !filter(item));
+                },
+            },
         },
     },
     saves: {
@@ -41,35 +67,56 @@ export const GROUP_MAP = {
         id: 'inventory',
         name: 'PF1.Inventory',
         groups: {
-            weapons: { id: 'inventory-weapons', name: 'PF1.InventoryWeapons' },
-            equipment: { id: 'inventory-equipment', name: 'PF1.InventoryArmorEquipment' },
-            consumables: { id: 'inventory-consumables', name: 'PF1.InventoryConsumables' },
-            gear: { id: 'inventory-gear', name: 'PF1.LootTypeGear' },
-            ammunition: { id: 'inventory-ammunition', name: 'PF1.LootTypeAmmo' },
-            miscellaneous: { id: 'inventory-miscellaneous', name: 'PF1.Misc' },
-            tradeGoods: { id: 'inventory-tradeGoods', name: 'PF1.LootTypeTradeGoods' },
-            containers: { id: 'inventory-containers', name: 'PF1.InventoryContainers' },
+            weapons: { id: 'inventory-weapons', name: 'PF1.InventoryWeapons', filter: (item) => item.type === 'weapon' },
+            armor: { id: 'inventory-armor', name: 'PF1.ArmorOrShield', filter: (item) => item.type === 'equipment' && ['armor', 'shield'].includes(item.subType) },
+            equipment: { id: 'inventory-equipment', name: 'PF1.InventoryEquipment', filter: (item) => item.type === 'equipment' && ['wondrous', 'other', 'clothing'].includes(item.subType) },
+            implant: { id: 'inventory-implant', name: 'PF1.InventoryImplants', filter: (item) => item.type === 'implant' },
+            consumables: { id: 'inventory-consumables', name: 'PF1.InventoryConsumables', filter: (item) => item.type === 'consumable' },
+            gear: { id: 'inventory-gear', name: 'PF1.Subtypes.Item.loot.gear.Plural', filter: (item) => item.type === 'loot' && gearSubtypes.includes(item.subType) },
+            ammunition: { id: 'inventory-ammunition', name: 'PF1.Subtypes.Item.loot.ammo.Plural', filter: (item) => item.type === 'loot' && item.subType === 'ammo' },
+            miscellaneous: { id: 'inventory-miscellaneous', name: 'PF1.Subtypes.Item.loot.misc.Plural', filter: (item) => item.type === 'loot' && miscSubtypes.includes(item.subType) },
+            tradeGoods: { id: 'inventory-tradeGoods', name: 'PF1.Subtypes.Item.loot.tradeGoods.Plural', filter: (item) => item.type === 'loot' && tradeSubtypes.includes(item.subType) },
+            containers: { id: 'inventory-containers', name: 'PF1.InventoryContainers', filter: (item) => item.type === 'container' },
 
-            other: { id: 'inventory-other', name: 'PF1.Other' },
+            // leftovers that could be from other mods or from a change in pf1
+            other: {
+                id: 'inventory-other',
+                name: 'PF1.Other',
+                filter: (item) => {
+                    Object.entries(GROUP_MAP.inventory.groups)
+                        .filter(([key, _]) => key !== 'other')
+                        .map(([_, value]) => value.filter)
+                        .every((filter) => !filter(item));
+                },
+            },
         },
     },
     features: {
         id: 'features',
         name: 'PF1.Features',
         groups: {
-            classFeat: { id: 'features-classFeat', name: 'PF1.ClassFeaturePlural' },
-            feat: { id: 'features-feat', name: 'PF1.FeatPlural' },
-            racial: { id: 'features-racial', name: 'PF1.RacialTraitPlural' },
-            template: { id: 'features-template', name: 'PF1.TemplatePlural' },
-            trait: { id: 'features-trait', name: 'PF1.TraitPlural' },
-            misc: { id: 'features-misc', name: 'PF1.Misc' },
+            classFeat: { id: 'features-classFeat', name: 'PF1.Subtypes.Item.feat.classFeat.Plural', filter: (item) => item.type === 'feat' && item.subType === 'classFeat' },
+            feat: { id: 'features-feat', name: 'PF1.Subtypes.Item.feat.feat.Plural', filter: (item) => item.type === 'feat' && item.subType === 'feat' },
+            racial: { id: 'features-racial', name: 'PF1.Subtypes.Item.feat.racial.Plural', filter: (item) => item.type === 'feat' && item.subType === 'racial' },
+            template: { id: 'features-template', name: 'PF1.Subtypes.Item.feat.template.Plural', filter: (item) => item.type === 'feat' && item.subType === 'template' },
+            trait: { id: 'features-trait', name: 'PF1.Subtypes.Item.feat.trait.Plural', filter: (item) => item.type === 'feat' && item.subType === 'trait' },
+            misc: { id: 'features-misc', name: 'PF1.Subtypes.Item.feat.misc.Plural', filter: (item) => item.type === 'feat' && item.subType === 'misc' },
 
             // spheres of power sections
-            combatTalents: { id: 'features-combat-talents', name: 'PF1SPHERES.CombatTalentPlural' },
-            magicTalents: { id: 'features-magic-talents', name: 'PF1SPHERES.MagicTalentPlural' },
+            combatTalents: { id: 'features-combat-talents', name: 'PF1SPHERES.CombatTalentPlural', filter: (item) => item.type === 'feat' && item.subType === 'combatTalent' },
+            magicTalents: { id: 'features-magic-talents', name: 'PF1SPHERES.MagicTalentPlural', filter: (item) => item.type === 'feat' && item.subType === 'magicTalent' },
 
-            // other
-            other: { id: 'features-other', name: 'PF1.Other' },
+            // leftovers that could be from other mods or from a change in pf1
+            other: {
+                id: 'features-other',
+                name: 'PF1.Other',
+                filter: (item) => {
+                    Object.entries(GROUP_MAP.features.groups)
+                        .filter(([key, _]) => key !== 'other')
+                        .map(([_, value]) => value.filter)
+                        .every((filter) => !filter(item));
+                },
+            },
         },
     },
     skills: {
@@ -110,7 +157,7 @@ export const GROUP_MAP = {
         id: 'other',
         name: 'PF1.Other',
         groups: {
-            other: { id: 'other-other', name: 'PF1.Other' },
+            other: { id: 'other-other', name: 'PF1.Other', filter: (item) => !handledItemTypes.includes(item.type) },
         },
     },
     utility: {
