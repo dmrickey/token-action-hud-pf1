@@ -532,17 +532,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         /**
          * @param {{id: string, name: string, filter: (item: ItemPF) => booelean}} parentGroup
-         * @param {object} [options]
-         * @param {boolean} [options.includeUnusable]
+         * @param {boolean} includeUnusable
          */
-        async #_buildFilteredItemActions(
-            parentGroup,
-            {
-                includeUnusable = false
-            } = {
-                    includeUnusable: false
-                }
-        ) {
+        async #_buildFilteredItemActions(parentGroup, includeUnusable = false) {
             if (this.actorData.isMulti) {
                 return;
             }
