@@ -46,6 +46,7 @@ export class ActionBuilderActorData {
     get isCurrentCombatant() { return !this.isMulti && this.inCombat && game.combat?.combatant?.id === this.combatant.id; }
 
     #_items = null;
+    /** @type {ItemPF[]} */
     get items() {
         return this.#_items ??=
             this.actor.items
@@ -68,11 +69,9 @@ export class ActionBuilderActorData {
     #_buffs = null;
     get buffs() {
         return this.#_buffs ??=
-            this.actor.items
-                ? this.actor.items
-                    .filter((item) => item.type === 'buff')
-                    .sort((a, b) => a.name < b.name ? -1 : 1)
-                : [];
+            this.actor.itemTypes.buff
+                .filter((item) => item.type === 'buff')
+                .sort((a, b) => a.name < b.name ? -1 : 1);
     }
 
     constructor({ actor, token } = { actor: {}, token: {} }) {

@@ -14,7 +14,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         get skipActionDialog() {
             const skip = Settings.pf1SkipActionDialogs;
-            return skip !== this.shift;
+            return skip !== this.isShift;
         }
 
         #logInvalidMulti = () => {
@@ -45,7 +45,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case ROLL_TYPE.bab: await Promise.all(actors.map((actor) => actor.rollBAB({ skipDialog: this.skipActionDialog }))); break;
                 case ROLL_TYPE.buff: await this.#_rollBuff(); break;
                 case ROLL_TYPE.casterLevel: this.actorData.isMulti ? this.#logInvalidMulti() : await actor.rollCL(book, { skipDialog: this.skipActionDialog }); break;
-                case ROLL_TYPE.cmb: await Promise.all(actors.map((actor) => actor.rollCMB({ skipDialog: this.skipActionDialog }))); break;
+                case ROLL_TYPE.cmb: await Promise.all(actors.map((actor) => actor.rollAttack({ maneuver: true, skipDialog: this.skipActionDialog }))); break;
                 case ROLL_TYPE.concentration: this.actorData.isMulti ? this.#logInvalidMulti() : await actor.rollConcentration(book, { skipDialog: this.skipActionDialog }); break;
                 case ROLL_TYPE.condition: await Promise.all(actors.map((actor) => actor.setCondition(actionId, enable))); break;
                 case ROLL_TYPE.defenses: await Promise.all(tokens.map((token) => token.actor.displayDefenseCard({ token }))); break;
@@ -54,10 +54,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case ROLL_TYPE.item: await this.#_rollItem(); break;
                 case ROLL_TYPE.makeInvisible: await this.#_makeInvisible(); break;
                 case ROLL_TYPE.makeVisible: await this.#_makeVisible(); break;
-                case ROLL_TYPE.melee: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, melee: true }))); break;
+                case ROLL_TYPE.melee: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, ranged: false }))); break;
                 case ROLL_TYPE.openSettings: await this.#_openSettings(); break;
                 case ROLL_TYPE.openTokenConfig: tokens.map((token) => new TokenConfig(token.document).render(true)); break;
-                case ROLL_TYPE.ranged: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, melee: false }))); break;
+                case ROLL_TYPE.ranged: await Promise.all(actors.map((actor) => actor.rollAttack({ skipDialog: this.skipActionDialog, ranged: true }))); break;
                 case ROLL_TYPE.removeFromCombat: await this.#_removeFromCombat(); break;
                 case ROLL_TYPE.rest: await this.#_rest(); break;
                 case ROLL_TYPE.save: await Promise.all(actors.map((actor) => actor.rollSavingThrow(actionId, { skipDialog: this.skipActionDialog }))); break;
@@ -95,17 +95,17 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async #_makeVisible() {
-            await Promise.all(this.actorData.tokens
+            const updates = this.actorData.tokens
                 .filter((token) => token.document.hidden)
-                .map((token) => token.toggleVisibility())
-            );
+                .map(t => ({ _id: t.id, hidden: false }));
+            await canvas.scene.updateEmbeddedDocuments("Token", updates);
         }
 
         async #_makeInvisible() {
-            await Promise.all(this.actorData.tokens
+            const updates = this.actorData.tokens
                 .filter((token) => !token.document.hidden)
-                .map((token) => token.toggleVisibility())
-            );
+                .map(t => ({ _id: t.id, hidden: true }));
+            await canvas.scene.updateEmbeddedDocuments("Token", updates);
         }
 
         async #_openSettings() {
@@ -155,7 +155,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const { item, subAction } = this.actorData;
 
-            if (this.rightClick) {
+            if (this.isRightClick) {
                 if (subAction) {
                     const app = new pf1.applications.component.ItemActionSheet(subAction);
                     app.render(true);

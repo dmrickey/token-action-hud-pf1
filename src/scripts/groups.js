@@ -139,12 +139,24 @@ export const GROUP_MAP = {
         name: 'PF1.Buffs',
         groups: {
             actions: { id: 'buffs-actions', name: `${MODULE.ID}.categories.activeBuffActions` },
-            temporary: { id: 'buffs-temporary', name: 'PF1.Temporary' },
-            item: { id: 'buffs-item', name: 'PF1.Item' },
-            permanent: { id: 'buffs-permanent', name: 'PF1.Permanent' },
-            miscellaneous: { id: 'buffs-miscellaneous', name: 'PF1.Misc' },
 
-            other: { id: 'buffs-other', name: 'PF1.Other' },
+            temporary: { id: 'buffs-temporary', name: 'PF1.Temporary', filter: (item) => item.type === 'buff' && item.subType === 'temp' },
+            spell: { id: 'buffs-spell', name: 'PF1.Spells', filter: (item) => item.type === 'buff' && item.subType === 'spell' },
+            item: { id: 'buffs-item', name: 'PF1.Items', filter: (item) => item.type === 'buff' && item.subType === 'item' },
+            feat: { id: 'buffs-feat', name: 'PF1.Features', filter: (item) => item.type === 'buff' && item.subType === 'feat' },
+            permanent: { id: 'buffs-permanent', name: 'PF1.Permanent', filter: (item) => item.type === 'buff' && item.subType === 'perm' },
+            miscellaneous: { id: 'buffs-miscellaneous', name: 'PF1.Misc', filter: (item) => item.type === 'buff' && item.subType === 'misc' },
+
+            other: {
+                id: 'buffs-other',
+                name: 'PF1.Other',
+                filter: (item) => {
+                    Object.entries(GROUP_MAP.buffs.groups)
+                        .filter(([key, _]) => key !== 'other')
+                        .map(([_, value]) => value.filter)
+                        .every((filter) => !filter(item));
+                },
+            },
         },
     },
     conditions: {
