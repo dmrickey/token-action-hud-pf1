@@ -54,13 +54,11 @@
             {
                 "id": "token-action-hud-core",
                 "type": "module",
-                "compatibility": [
-                    {
-                        "maximum": "2.0",
-                        "minimum": "2.0",
-                        "verified": "2.0"
-                    }
-                ]
+                "compatibility": {
+                    "maximum": "2.0",
+                    "minimum": "2.0",
+                    "verified": "2.0"
+                }
             }
         ],
         "optional": [],
