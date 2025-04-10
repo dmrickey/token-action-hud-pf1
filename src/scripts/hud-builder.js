@@ -121,16 +121,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             let meleeMod, rangedMod;
 
             if (this.actorData.isSingle) {
-                const { system } = this.actorData.actor;
-                const attributes = system.attributes;
-                const abilities = system.abilities;
-                const sizeModifier = pf1.config.sizeMods[system.traits.size];
-                const baseBonus = attributes.attack.shared + attributes.attack.general + sizeModifier;
-                const meleeAbility = abilities[attributes.attack.meleeAbility]?.mod ?? 0;
-                const rangedAbility = abilities[attributes.attack.rangedAbility]?.mod ?? 0;
+                const { abilities, attributes, traits } = this.actorData.actor.system;
+                const { attack } = attributes;
+                const sizeModifier = pf1.config.sizeMods[traits.size.base]
+                const baseBonus = attack.shared + attack.general;
+                const meleeAbility = abilities[attack.meleeAbility]?.mod ?? 0;
+                const rangedAbility = abilities[attack.rangedAbility]?.mod ?? 0;
 
-                meleeMod = baseBonus + attributes.attack.melee + meleeAbility;
-                rangedMod = baseBonus + attributes.attack.ranged + rangedAbility;
+                meleeMod = baseBonus + attack.melee + meleeAbility + sizeModifier;
+                rangedMod = baseBonus + attack.ranged + rangedAbility + sizeModifier;
             }
 
             const basicActions = [{
@@ -162,7 +161,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: Utils.localize('PF1.Initiative'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
                 cssClass: `${this.actorData.inCombat ? 'active' : ''} ${game.user.isGM ? '' : 'flat-disabled'}`,
-                info1: this.actorData.combatant.initiative === null
+                info1: [null, undefined].includes(this.actorData.combatant.initiative)
                     ? this.#modToInfo(this.actorData.actor.system.attributes.init.total)
                     : { text: this.actorData.combatant.initiative },
             }];
