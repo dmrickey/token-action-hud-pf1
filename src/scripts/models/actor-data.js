@@ -10,6 +10,7 @@ export class ActionBuilderActorData {
     #_fallbackToken = null;
     get token() { return this.#_fallbackToken || this.tokens[0] || {}; }
 
+    /** @returns {ActorPF[]} */
     get actors() { return this.#_fallbackActor ? [this.#_fallbackActor] : this.tokens.map(token => token.actor).filter(x => !!x); }
     get tokens() { return this.#_fallbackToken ? [this.#_fallbackToken] : canvas.tokens.controlled; }
 

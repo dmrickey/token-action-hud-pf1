@@ -134,7 +134,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async #_rest() {
-            this.actorData.actors.forEach((actor) => new pf1.applications.actor.ActorRestDialog(actor).render(true));
+            pf1.utils.party.rest({ actors: this.actorData.actors });
         }
 
         async #_rollBuff() {
