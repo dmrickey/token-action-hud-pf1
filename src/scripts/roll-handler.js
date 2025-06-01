@@ -144,6 +144,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
+            if (this.isRightClick) {
+                buff.sheet.render(true, { focus: true });
+                return;
+            }
+
             await buff.setActive(enable);
         }
 
