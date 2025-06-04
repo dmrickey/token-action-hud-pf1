@@ -10,11 +10,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
     HudBuilder = class HudBuilder extends coreModule.api.ActionHandler {
         actorData = new ActionBuilderActorData();
 
-        constructor() {
-            super();
-            this.compendiumActionHandler = { buildActions: () => { } };
-        }
-
         /**
          * Build System Actions
          * @override
