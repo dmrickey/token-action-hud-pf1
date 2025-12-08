@@ -160,9 +160,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'combat-initiative',
                 name: Utils.localize('PF1.Initiative'),
                 encodedValue: this.#_encodeData(ROLL_TYPE.initiative),
-                cssClass: `${this.actorData.inCombat ? 'active' : ''} ${game.user.isGM ? '' : 'flat-disabled'}`,
+                cssClass: this.actorData.inCombat ? 'active' : '',
                 info1: [null, undefined].includes(this.actorData.combatant.initiative)
-                    ? this.#modToInfo(this.actorData.actor.system.attributes.init.total)
+                    ? this.#modToInfo(this.actorData.actor.system.attributes.init.total) 
                     : { text: this.actorData.combatant.initiative },
             }];
 
