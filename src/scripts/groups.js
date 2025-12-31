@@ -30,11 +30,19 @@ export const GROUP_MAP = {
             // misc actions not defined by Items (e.g. initiative, cmb, etc)
             base: { id: 'combat-base', name: 'PF1.Base', settings: { showTitle: false } },
 
+            inventoryWeapon: { id: 'combat-inventoryWeapon', name: 'PF1.InventoryWeapons', filter: (item) => item.type === 'weapon' && item.system.showInCombat },
             weaponAttaack: { id: 'combat-weaponAttack', name: 'PF1.Subtypes.Item.attack.weapon.Plural', filter: (item) => item.type === 'attack' && item.subType === 'weapon' },
             naturalAttack: { id: 'combat-naturalAttack', name: 'PF1.Subtypes.Item.attack.natural.Plural', filter: (item) => item.type === 'attack' && item.subType === 'natural' },
+            classFeat: { id: 'combat-classFeat', name: 'PF1.Subtypes.Item.feat.classFeat.Plural', filter: (item) => item.type === 'feat' && item.subType === 'classFeat' && item.system.showInCombat },
             classAbilities: { id: 'combat-classAbilities', name: 'PF1.Subtypes.Item.attack.ability.Plural', filter: (item) => item.type === 'attack' && item.subType === 'ability' },
-            racialAbilities: { id: 'combat-racialAbilities', name: 'PF1.Subtypes.Item.attack.racial.Plural', filter: (item) => item.type === 'attack' && item.subType === 'racialAbility' },
+            feat: { id: 'combat-feat', name: 'PF1.Subtypes.Item.feat.feat.Plural', filter: (item) => item.type === 'feat' && item.subType === 'feat' && item.system.showInCombat },
+            racial: { id: 'combat-racial', name: 'PF1.Subtypes.Item.feat.racial.Plural', filter: (item) => item.type === 'feat' && item.subType === 'racial' && item.system.showInCombat },
+            racialAbilities: { id: 'combat-racialAbilities', name: 'PF1.Subtypes.Item.attack.racialAbility.Plural', filter: (item) => item.type === 'attack' && item.subType === 'racialAbility' },
+            spell: { id: 'combat-spell', name: 'PF1.Spells', filter: (item) => item.type === 'spell' && item.system.showInCombat },
             items: { id: 'combat-items', name: 'PF1.Subtypes.Item.attack.item.Plural', filter: (item) => item.type === 'attack' && item.subType === 'item' },
+            equipment: { id: 'combat-equipment', name: 'PF1.InventoryEquipment', filter: (item) => item.type === 'equipment' && item.system.showInCombat },
+            consumable: { id: 'combat-consumable', name: 'PF1.InventoryConsumables', filter: (item) => item.type === 'consumable' && item.system.showInCombat },
+            miscFeat: { id: 'combat-miscFeat', name: 'PF1.Features', filter: (item) => item.type === 'feat' && item.subType === 'misc' && item.system.showInCombat },
             miscellaneous: { id: 'combat-miscellaneous', name: 'PF1.Subtypes.Item.attack.misc.Plural', filter: (item) => item.type === 'attack' && item.subType === 'misc' },
 
             other: {
