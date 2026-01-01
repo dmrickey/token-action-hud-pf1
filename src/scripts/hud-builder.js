@@ -361,7 +361,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 }
 
                 const knowledges = this.#knowledgeSkillIds
-                    .filter((id) => !Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank)
+                    .filter((id) => !!actorSkills[id] && (!Settings.hideUntrainedSkills || !actorSkills[id].rt || !!actorSkills[id].rank))
                     .map((id) => ({
                         id: `categorized-${id}`,
                         cssClass: this.actorData.isSingle && actorSkills[id].rt && !actorSkills[id].rank ? 'action-nulled-out' : '',
