@@ -109,8 +109,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async #_openSettings() {
-            new SettingsConfig().render(true);
-            await new Promise(r => setTimeout(r, 100)).then(() => ui.activeWindow.activateTab(MODULE.ID));
+            const settingsWindow = new SettingsConfig();
+            await settingsWindow.render(true);
+            settingsWindow.changeTab(MODULE.ID, 'categories');
         }
 
         async #_removeFromCombat() {
