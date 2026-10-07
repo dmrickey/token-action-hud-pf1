@@ -13,7 +13,6 @@ const keys = {
     showModifiers: 'showModifiers',
     showPassiveFeatures: 'showPassiveFeatures',
     showPassiveInventory: 'showPassiveInventory',
-    simplifySkillNames: 'simplifySkillNames',
     spellPreparation: 'spellPreparation',
 };
 
@@ -54,10 +53,6 @@ export function register(updateFunc) {
         },
         [keys.showPassiveInventory]: {
             default: false,
-            type: Boolean,
-        },
-        [keys.simplifySkillNames]: {
-            default: true,
             type: Boolean,
         },
         [keys.spellPreparation]: {
@@ -108,20 +103,6 @@ export class Settings {
     }
 
     /**
-     * @returns {boolean} Simplifies skill names to only the name in parenthesis
-     */
-    static get simplifySkillNames() {
-        return Settings.#getSetting(keys.simplifySkillNames);
-    }
-
-    /**
-     * @returns {boolean} Simplifies skill names to only the name in parenthesis
-     */
-    static set simplifySkillNames(value) {
-        return Settings.#setSetting(keys.simplifySkillNames, value);
-    }
-
-    /**
      * @returns {boolean} Should show roll modifiers
      */
     static get showModifiers() {
@@ -156,6 +137,11 @@ export class Settings {
     static async toggleTahGrid() {
         const current = Settings.tahGrid;
         await Settings.#setSetting('grid', !current, 'token-action-hud-core');
+    }
+
+    static async toggleCategorizeSkills() {
+        const current = Settings.categorizeSkills;
+        await Settings.#setSetting(keys.categorizeSkills, !current);
     }
 
     static async toggleUntrainedSkills() {

@@ -20,8 +20,8 @@
     "flags": {},
     "version": "This is auto replaced",
     "compatibility": {
-        "minimum": "13",
-        "verified": "13.351"
+        "minimum": "14",
+        "verified": "14.368"
     },
     "esmodules": [
         "./token-action-hud-pf1.min.js"
@@ -45,8 +45,8 @@
                 "type": "system",
                 "manifest": "https://gitlab.com/foundryvtt_pathfinder1e/foundryvtt-pathfinder1/-/releases/permalink/latest/downloads/system.json",
                 "compatibility": {
-                    "minimum": "11",
-                    "verified": "11"
+                    "minimum": "12",
+                    "verified": "12"
                 }
             }
         ],
@@ -55,8 +55,8 @@
                 "id": "token-action-hud-core",
                 "type": "module",
                 "compatibility": {
-                    "minimum": "2.1",
-                    "maximum": "2.9999.9999",
+                    "minimum": "2.1.0",
+                    "maximum": "3",
                     "verified": "2.1.1"
                 }
             }

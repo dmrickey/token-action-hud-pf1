@@ -59,16 +59,16 @@ export const GROUP_MAP = {
     },
     saves: {
         id: 'saves',
-        name: 'PF1.SavingThrowPlural',
+        name: 'PF1.SavingThrow.many',
         groups: {
-            saves: { id: 'saves-saves', name: 'PF1.SavingThrowPlural', settings: { showTitle: false } },
+            saves: { id: 'saves-saves', name: 'PF1.SavingThrow.many', settings: { showTitle: false } },
         },
     },
     checks: {
         id: 'checks',
-        name: 'PF1.BuffTarAbilityChecks',
+        name: 'token-action-hud-pf1.ability-checks',
         groups: {
-            checks: { id: 'checks-checks', name: 'PF1.BuffTarAbilityChecks', settings: { showTitle: false } },
+            checks: { id: 'checks-checks', name: 'token-action-hud-pf1.ability-checks', settings: { showTitle: false } },
         },
     },
     inventory: {
@@ -129,9 +129,9 @@ export const GROUP_MAP = {
     },
     skills: {
         id: 'skills',
-        name: 'PF1.Skills',
+        name: 'PF1.Skill.many',
         groups: {
-            skills: { id: 'skills-skills', name: 'PF1.Skills', settings: { showTitle: false } },
+            skills: { id: 'skills-skills', name: 'PF1.Skill.many', settings: { showTitle: false } },
             utils: { id: 'skills-utils', name: 'categories.utility' }
         },
     },
@@ -185,7 +185,7 @@ export const GROUP_MAP = {
         id: 'utility',
         name: 'categories.utility',
         groups: {
-            rest: { id: 'utility-rest', name: 'PF1.Rest' },
+            rest: { id: 'utility-rest', name: 'PF1.Rest.Verb' },
             token: { id: 'utility-token', name: 'Token' },
             utility: { id: 'utility-utility', name: 'categories.utility' },
         },

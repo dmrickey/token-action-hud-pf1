@@ -1,15 +1,18 @@
 {
     "token-action-hud-pf1": {
         "knowledge-skills": "Knowledge Skills",
+        "ability-checks": "Ability Checks",
         "actions": {
+            "categorizeSkillsDisabled": "Group Skills",
+            "categorizeSkillsEnabled": "Ungroup Skills",
             "displayDefenses": "Display Defenses",
             "openSettings": "Open Settings",
             "openTokenConfig": "Open Token Config",
-            "toggleUntrainedSkillsDisabled": "Show Untrained Skills",
-            "toggleUntrainedSkillsEnabled": "Hide Untrained Skills",
             "toggleSkipDisabled": "Skip Dialogs is Disabled",
             "toggleSkipEnabled": "Skip Dialogs is Enabled",
-            "toggleTahGrid": "Toggle Grid"
+            "toggleTahGrid": "Toggle Grid",
+            "toggleUntrainedSkillsDisabled": "Show Untrained Skills",
+            "toggleUntrainedSkillsEnabled": "Hide Untrained Skills"
         },
         "categories": {
             "activeBuffActions": "Active Buff Actions",
@@ -46,10 +49,6 @@
             "showPassiveInventory": {
                 "name": "Show Passive Inventory",
                 "hint": "When disabled (default), only items that can be used will be shown. When enabled, every item in the actor's inventory will show."
-            },
-            "simplifySkillNames": {
-                "name": "Simplify Skill Names",
-                "hint": "Useful for custom skills (mostly knowledge, craft, profession, and perform skills) to only show the name in Parenthesis. e.g. `Knowledge (Absalom)` will show just the name `Absalom`."
             },
             "spellPreparation": {
                 "name": "Spell Visibility",
