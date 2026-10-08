@@ -23,7 +23,7 @@ export class Utils {
     }
 
     static getItemActions = (item) => {
-        const actions = item.actions;
+        return item.actions.contents;
         return actions ? [...actions] : [];
         // const unchained = game.settings.get('pf1', 'unchainedActionEconomy');
 

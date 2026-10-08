@@ -52,7 +52,7 @@ export class ActionBuilderActorData {
         return this.#_items ??=
             this.actor.items
                 ? this.actor.items
-                    .filter((item) => item.canUse)
+                    .filter((item) => item.canUse && item.actions?.size)
                     .sort((a, b) => a.name < b.name ? -1 : 1)
                 : [];
     }
@@ -62,17 +62,9 @@ export class ActionBuilderActorData {
         return this.#_unusableItems ??=
             this.actor.items
                 ? this.actor.items
-                    .filter((item) => !item.canUse)
+                    .filter((item) => !item.canUse || !item.actions?.size)
                     .sort((a, b) => a.name < b.name ? -1 : 1)
                 : [];
-    }
-
-    #_buffs = null;
-    get buffs() {
-        return this.#_buffs ??=
-            this.actor.itemTypes.buff
-                .filter((item) => item.type === 'buff')
-                .sort((a, b) => a.name < b.name ? -1 : 1);
     }
 
     constructor({ actor, token } = { actor: {}, token: {} }) {

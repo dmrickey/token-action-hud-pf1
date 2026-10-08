@@ -29,12 +29,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.#_buildChecks(),
                 this.#_buildConditions(),
 
-                //  this.#_buildCombat(),
-                //  this.#_buildBuffs(),
-                //  this.#_buildInventory(),
+                this.#_buildCombat(),
+                this.#_buildBuffs(),
+                this.#_buildInventory(),
                 this.#_buildSpells(),
-                //  this.#_buildFeatures(),
-                //  this.#_buildOtherItems(),
+                this.#_buildFeatures(),
+                this.#_buildOtherItems(),
                 this.#_buildUtils(),
             ]);
         }
@@ -202,6 +202,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await Promise.all(builds);
         }
 
+        #knownBuffTypeMap = {
+            'temp': GROUP_MAP.buffs.groups.temporary,
+            'spell': GROUP_MAP.buffs.groups.spell,
+            'item': GROUP_MAP.buffs.groups.item,
+            'feat': GROUP_MAP.buffs.groups.feat,
+            'perm': GROUP_MAP.buffs.groups.permanent,
+            'misc': GROUP_MAP.buffs.groups.miscellaneous,
+        }
         async #_buildBuffs() {
             if (this.actorData.isMulti) {
                 return;
@@ -216,7 +224,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             });
 
             const addBuffs = (subType, group) => {
-                const buffs = this.actorData.buffs
+                const buffs = this.actorData.actor.itemTypes.buff
                     .filter((buff) => buff.subType === subType)
                     .map(mapBuff);
                 this.addActions(buffs, group);
@@ -224,22 +232,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             const { groups } = GROUP_MAP.buffs;
 
-            addBuffs('temp', groups.temporary);
-            addBuffs('spell', groups.spell);
-            addBuffs('item', groups.item);
-            addBuffs('feat', groups.feat);
-            addBuffs('perm', groups.permanent);
-            addBuffs('misc', groups.miscellaneous);
+            Object.entries(this.#knownBuffTypeMap).forEach(([subType, group]) => addBuffs(subType, group));
+            Object.keys(pf1.config.buffTypes).filter(x => !Object.keys(this.#knownBuffTypeMap).includes(x)).forEach((subType) => {
+                const group = {
+                    id: `${GROUP_MAP.buffs.id}-${subType}`,
+                    name: pf1.config.buffTypes[subType],
+                    type: 'system-derived',
+                };
+                addBuffs(subType, group);
+            });
 
-            const withActions = this.actorData.buffs
+            const withActions = this.actorData.actor.itemTypes.buff
                 .filter((buff) => buff.isActive && Utils.getItemActions(buff).length > 0);
             await this.#_addItemActions(withActions, groups.actions, { actionLayout: 'onlyActions' });
-
-            // leftovers that could be from other mods or from a change in pf1
-            const otherBuffs = this.actorData.buffs
-                .filter((item) => !['item', 'temp', 'perm', 'misc', 'feat', 'spell'].includes(item.subType))
-                .map(mapBuff);
-            this.addActions(otherBuffs, groups.other);
         }
 
         async #_buildFeatures() {
@@ -248,7 +253,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             var builds = Object.values(GROUP_MAP.features.groups)
-                .map((group) => this.#_buildFilteredItemActions(group, Settings.showPassiveInventory));
+                .map((group) => this.#_buildFilteredItemActions(group, Settings.showPassiveFeatures));
             await Promise.all(builds);
         }
 
@@ -257,7 +262,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
-            await this.#_buildFilteredItemActions(GROUP_MAP.other.groups.other, Settings.showPassiveFeatures);
+            await this.#_buildFilteredItemActions(GROUP_MAP.other.groups.other, Settings.showPassiveFeatures || Settings.showPassiveInventory);
         }
 
         async #_buildInventory() {

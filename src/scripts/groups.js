@@ -73,18 +73,18 @@ export const GROUP_MAP = {
     },
     inventory: {
         id: 'inventory',
-        name: 'PF1.Inventory',
+        name: 'PF1.Inventory.Label',
         groups: {
-            weapons: { id: 'inventory-weapons', name: 'PF1.InventoryWeapons', filter: (item) => item.type === 'weapon' },
+            weapons: { id: 'inventory-weapons', name: 'PF1.Inventory.Category.weapon', filter: (item) => item.type === 'weapon' },
             armor: { id: 'inventory-armor', name: 'PF1.ArmorOrShield', filter: (item) => item.type === 'equipment' && ['armor', 'shield'].includes(item.subType) },
-            equipment: { id: 'inventory-equipment', name: 'PF1.InventoryEquipment', filter: (item) => item.type === 'equipment' && ['wondrous', 'other', 'clothing'].includes(item.subType) },
-            implant: { id: 'inventory-implant', name: 'PF1.InventoryImplants', filter: (item) => item.type === 'implant' },
-            consumables: { id: 'inventory-consumables', name: 'PF1.InventoryConsumables', filter: (item) => item.type === 'consumable' },
-            gear: { id: 'inventory-gear', name: 'PF1.Subtypes.Item.loot.gear.Plural', filter: (item) => item.type === 'loot' && gearSubtypes.includes(item.subType) },
-            ammunition: { id: 'inventory-ammunition', name: 'PF1.Subtypes.Item.loot.ammo.Plural', filter: (item) => item.type === 'loot' && item.subType === 'ammo' },
-            miscellaneous: { id: 'inventory-miscellaneous', name: 'PF1.Subtypes.Item.loot.misc.Plural', filter: (item) => item.type === 'loot' && miscSubtypes.includes(item.subType) },
-            tradeGoods: { id: 'inventory-tradeGoods', name: 'PF1.Subtypes.Item.loot.tradeGoods.Plural', filter: (item) => item.type === 'loot' && tradeSubtypes.includes(item.subType) },
-            containers: { id: 'inventory-containers', name: 'PF1.InventoryContainers', filter: (item) => item.type === 'container' },
+            equipment: { id: 'inventory-equipment', name: 'PF1.Inventory.Category.equipment', filter: (item) => item.type === 'equipment' && ['wondrous', 'other', 'clothing'].includes(item.subType) },
+            implant: { id: 'inventory-implant', name: 'PF1.Inventory.Category.implant', filter: (item) => item.type === 'implant' },
+            consumables: { id: 'inventory-consumables', name: 'PF1.Inventory.Category.consumable', filter: (item) => item.type === 'consumable' },
+            gear: { id: 'inventory-gear', name: 'TYPES.Item.loot', filter: (item) => item.type === 'loot' && gearSubtypes.includes(item.subType) },
+            ammunition: { id: 'inventory-ammunition', name: 'PF1.Inventory.Category.ammo', filter: (item) => item.type === 'loot' && item.subType === 'ammo' },
+            miscellaneous: { id: 'inventory-miscellaneous', name: 'PF1.Misc.Label', filter: (item) => item.type === 'loot' && miscSubtypes.includes(item.subType) },
+            tradeGoods: { id: 'inventory-tradeGoods', name: 'PF1.Subtypes.Item.loot.tradeGoods.many', filter: (item) => item.type === 'loot' && tradeSubtypes.includes(item.subType) },
+            containers: { id: 'inventory-containers', name: 'PF1.Inventory.Category.container', filter: (item) => item.type === 'container' },
 
             // leftovers that could be from other mods or from a change in pf1
             other: {
@@ -101,14 +101,14 @@ export const GROUP_MAP = {
     },
     features: {
         id: 'features',
-        name: 'PF1.Features',
+        name: 'PF1.Feature.many',
         groups: {
-            classFeat: { id: 'features-classFeat', name: 'PF1.Subtypes.Item.feat.classFeat.Plural', filter: (item) => item.type === 'feat' && item.subType === 'classFeat' },
-            feat: { id: 'features-feat', name: 'PF1.Subtypes.Item.feat.feat.Plural', filter: (item) => item.type === 'feat' && item.subType === 'feat' },
-            racial: { id: 'features-racial', name: 'PF1.Subtypes.Item.feat.racial.Plural', filter: (item) => item.type === 'feat' && item.subType === 'racial' },
-            template: { id: 'features-template', name: 'PF1.Subtypes.Item.feat.template.Plural', filter: (item) => item.type === 'feat' && item.subType === 'template' },
-            trait: { id: 'features-trait', name: 'PF1.Subtypes.Item.feat.trait.Plural', filter: (item) => item.type === 'feat' && item.subType === 'trait' },
-            misc: { id: 'features-misc', name: 'PF1.Subtypes.Item.feat.misc.Plural', filter: (item) => item.type === 'feat' && item.subType === 'misc' },
+            classFeat: { id: 'features-classFeat', name: 'PF1.Subtypes.Item.feat.classFeat.many', filter: (item) => item.type === 'feat' && item.subType === 'classFeat' },
+            feat: { id: 'features-feat', name: 'PF1.Subtypes.Item.feat.feat.many', filter: (item) => item.type === 'feat' && item.subType === 'feat' },
+            racial: { id: 'features-racial', name: 'PF1.Subtypes.Item.feat.racial.many', filter: (item) => item.type === 'feat' && item.subType === 'racial' },
+            template: { id: 'features-template', name: 'PF1.Subtypes.Item.feat.template.many', filter: (item) => item.type === 'feat' && item.subType === 'template' },
+            trait: { id: 'features-trait', name: 'PF1.Subtypes.Item.feat.trait.many', filter: (item) => item.type === 'feat' && item.subType === 'trait' },
+            misc: { id: 'features-misc', name: 'PF1.Subtypes.Item.feat.misc.many', filter: (item) => item.type === 'feat' && item.subType === 'misc' },
 
             // spheres of power sections
             combatTalents: { id: 'features-combat-talents', name: 'PF1SPHERES.CombatTalentPlural', filter: (item) => item.type === 'feat' && item.subType === 'combatTalent' },
@@ -148,23 +148,12 @@ export const GROUP_MAP = {
         groups: {
             actions: { id: 'buffs-actions', name: `${MODULE.ID}.categories.activeBuffActions` },
 
-            temporary: { id: 'buffs-temporary', name: 'PF1.Temporary', filter: (item) => item.type === 'buff' && item.subType === 'temp' },
-            spell: { id: 'buffs-spell', name: 'PF1.Spells', filter: (item) => item.type === 'buff' && item.subType === 'spell' },
-            item: { id: 'buffs-item', name: 'PF1.Items', filter: (item) => item.type === 'buff' && item.subType === 'item' },
-            feat: { id: 'buffs-feat', name: 'PF1.Features', filter: (item) => item.type === 'buff' && item.subType === 'feat' },
-            permanent: { id: 'buffs-permanent', name: 'PF1.Permanent', filter: (item) => item.type === 'buff' && item.subType === 'perm' },
-            miscellaneous: { id: 'buffs-miscellaneous', name: 'PF1.Misc', filter: (item) => item.type === 'buff' && item.subType === 'misc' },
-
-            other: {
-                id: 'buffs-other',
-                name: 'PF1.Other',
-                filter: (item) => {
-                    Object.entries(GROUP_MAP.buffs.groups)
-                        .filter(([key, _]) => key !== 'other')
-                        .map(([_, value]) => value.filter)
-                        .every((filter) => !filter(item));
-                },
-            },
+            temporary: { id: 'buffs-temporary', name: 'PF1.Subtypes.Item.buff.temp.many', filter: (item) => item.type === 'buff' && item.subType === 'temp' },
+            spell: { id: 'buffs-spell', name: 'PF1.Subtypes.Item.buff.spell.many', filter: (item) => item.type === 'buff' && item.subType === 'spell' },
+            item: { id: 'buffs-item', name: 'PF1.Subtypes.Item.buff.item.many', filter: (item) => item.type === 'buff' && item.subType === 'item' },
+            feat: { id: 'buffs-feat', name: 'PF1.Subtypes.Item.buff.feat.many', filter: (item) => item.type === 'buff' && item.subType === 'feat' },
+            permanent: { id: 'buffs-permanent', name: 'PF1.Subtypes.Item.buff.perm.many', filter: (item) => item.type === 'buff' && item.subType === 'perm' },
+            miscellaneous: { id: 'buffs-miscellaneous', name: 'PF1.Subtypes.Item.buff.misc.many', filter: (item) => item.type === 'buff' && item.subType === 'misc' },
         },
     },
     conditions: {
