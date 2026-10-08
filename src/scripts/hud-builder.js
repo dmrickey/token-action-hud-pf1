@@ -32,7 +32,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 //  this.#_buildCombat(),
                 //  this.#_buildBuffs(),
                 //  this.#_buildInventory(),
-                //  this.#_buildSpells(),
+                this.#_buildSpells(),
                 //  this.#_buildFeatures(),
                 //  this.#_buildOtherItems(),
                 this.#_buildUtils(),
@@ -388,15 +388,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             const spellGroup = GROUP_MAP.spells.groups.spells;
-            const allSpells = this.actorData.items
-                .filter((item) => item.type === 'spell');
 
-            const spellbookKeys = Object.keys(this.actorData.actor.system.attributes.spells.spellbooks)
-                .map((key) => ({ key, spellbook: this.actorData.actor.system.attributes.spells.spellbooks[key] }))
-                .filter(({ _key, spellbook }) => spellbook.inUse)
-                .map(({ key, _spellbook }) => key);
+            const spellbookKeys = Object.keys(this.actorData.actor.system.spells);
+            const spellbooks = this.actorData.actor.system.spells;
 
-            const { spellbooks } = this.actorData.actor.system.attributes.spells;
             const levels = Array.from(Array(10).keys());
 
             for (const key of spellbookKeys) {
@@ -405,7 +400,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 if (spellbookKeys.length > 1) {
                     spellbookGroup = {
                         id: `${spellGroup.id}-${key}`,
-                        name: Utils.localize(spellbook.label) || spellbook.name,
+                        name: spellbook.parent.name,
                         type: 'system-derived',
                         settings: { style: 'tab' },
                     };
@@ -416,12 +411,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const basicActions = [
                     {
                         id: `casterLevel-${key}`,
-                        name: Utils.localize('PF1.CasterLevelCheck'),
+                        name: Utils.localize('PF1.CasterLevel.Check'),
                         encodedValue: this.#_encodeData(ROLL_TYPE.casterLevel, 'casterLevel', { book: key }),
                     },
                     {
                         id: `concentration-${key}`,
-                        name: Utils.localize('PF1.ConcentrationCheck'),
+                        name: Utils.localize('PF1.Concentration.Check.Label'),
                         encodedValue: this.#_encodeData(ROLL_TYPE.concentration, 'concentration', { book: key }),
                     },
                 ];
@@ -433,17 +428,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         prepFilter = (_spell) => true;
                         break;
                     case 'allPrepared':
-                        prepFilter = (spell) => !!spell.maxCharges;
+                        prepFilter = (spell) => !!spell.maxCharges || spell.canUse;
                         break;
                     case 'onlyRemaining':
                     default:
-                        prepFilter = (spell) => (spell.charges || 0) - (spell.slotCost || 0) >= 0;
-                        // todo v10
-                        //prepFilter = (spell) => !!spell.canUse;
+                        prepFilter = (spell) => spell.canUse && (!spellbook.spontaneous || spell.system.level === 0 || !!spell.spellbook.levels[spell.system.level]?.value);
                         break;
                 }
 
-                const bookSpells = allSpells.filter((spell) => spell.system.spellbook === key && prepFilter(spell));
+                const bookSpells = spellbook.items.filter((spell) => prepFilter(spell));
 
                 for (const level of levels) {
                     const levelGroup = {
@@ -452,7 +445,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         type: 'system-derived',
                     };
 
-                    const spellLevel = spellbook.spells[`spell${level}`];
+                    const spellLevel = spellbook.levels[level];
                     if (level && spellbook.spontaneous && spellLevel.max) {
                         levelGroup.info1 = { text: `${spellLevel.value || 0}/${spellLevel.max}` };
                     }

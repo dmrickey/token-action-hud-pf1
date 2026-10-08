@@ -22,8 +22,6 @@ export class Utils {
         }
     }
 
-    static #itemHasActions = (item) => !!this.getItemActions(item).length;
-    static canUseItem = (item) => this.#itemHasActions(item) || !!item.getScriptCalls("use").length;
     static getItemActions = (item) => {
         const actions = item.actions;
         return actions ? [...actions] : [];

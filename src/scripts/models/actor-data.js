@@ -52,7 +52,7 @@ export class ActionBuilderActorData {
         return this.#_items ??=
             this.actor.items
                 ? this.actor.items
-                    .filter((item) => Utils.canUseItem(item))
+                    .filter((item) => item.canUse)
                     .sort((a, b) => a.name < b.name ? -1 : 1)
                 : [];
     }
@@ -62,7 +62,7 @@ export class ActionBuilderActorData {
         return this.#_unusableItems ??=
             this.actor.items
                 ? this.actor.items
-                    .filter((item) => !Utils.canUseItem(item))
+                    .filter((item) => !item.canUse)
                     .sort((a, b) => a.name < b.name ? -1 : 1)
                 : [];
     }
